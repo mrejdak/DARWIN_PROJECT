@@ -19,7 +19,7 @@ public class Simulation implements Runnable{
         this.animals = new ArrayList<>();
 
         for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point);
+            Animal animal = new Animal(point, 5,10);
             try {
                 map.place(animal);
                 this.animals.add(animal);

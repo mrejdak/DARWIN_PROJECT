@@ -9,8 +9,8 @@ class RectangularMapTest {
     @Test
     void testPlace() {
         WorldMap rectangularMap = new RectangularMap(4, 4);
-        Animal animal1 = new Animal(new Vector2d(2, 2));
-        Animal animal2 = new Animal(new Vector2d(2, 2));
+        Animal animal1 = new Animal(new Vector2d(2, 2), 1,10);
+        Animal animal2 = new Animal(new Vector2d(2, 2), 1,10);
 
         assertDoesNotThrow(() -> rectangularMap.place(animal1));
 
@@ -24,8 +24,8 @@ class RectangularMapTest {
         Vector2d position1 = new Vector2d(3, 3);
         Vector2d position2 = new Vector2d(0, 3);
 
-        Animal animal1 = new Animal(position1);
-        Animal animal2 = new Animal(position2);
+        Animal animal1 = new Animal(position1, 1,10);
+        Animal animal2 = new Animal(position2, 1,10);
 
         try {
             rectangularMap.place(animal1);
@@ -53,7 +53,7 @@ class RectangularMapTest {
         Vector2d position1 = new Vector2d(3, 3);
         Vector2d position2 = new Vector2d(0, 3);
 
-        Animal animal1 = new Animal(position1);
+        Animal animal1 = new Animal(position1, 1,10);
 
         try {
             rectangularMap.place(animal1);
@@ -72,7 +72,7 @@ class RectangularMapTest {
         Vector2d position1 = new Vector2d(11, 11);
         Vector2d position2 = new Vector2d(12, 13);
 
-        Animal animal1 = new Animal(position1);
+        Animal animal1 = new Animal(position1, 1,10);
 
         try {
             rectangularMap.place(animal1);
@@ -92,7 +92,7 @@ class RectangularMapTest {
         Vector2d position1 = new Vector2d(4,4);
         Vector2d position2 = new Vector2d(2,2);
 
-        Animal animal1 = new Animal(position1);
+        Animal animal1 = new Animal(position1, 1,10);
         try {
             rectangularMap.place(animal1);
         } catch (IncorrectPositionException e) {

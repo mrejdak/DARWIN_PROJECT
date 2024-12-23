@@ -5,17 +5,27 @@ import static agh.ics.oop.model.MapDirection.*;
 public class Animal implements WorldElement{
     private MapDirection direction;
     private Vector2d position;
-    private static final Vector2d mapLowerLeft = new Vector2d(0, 0);
-    private static final Vector2d mapUpperRight = new Vector2d(4, 4);
+    private int energyLevel;
+    private final Genes genes;
 
-
-    public Animal() {
-        this(new Vector2d(2, 2));
-    }
-
-    public Animal(Vector2d position) {
+    //Constructor for initial animals
+    public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
         this.direction = NORTH;
         this.position = position;
+        this.energyLevel = initialEnergyLevel;
+        this.genes = new Genes(amountOfGenes);
+    }
+
+    //Constructor for children
+    public Animal(Animal firstParent, Animal secondParent, int amountOfGenes, int simulationVariants){
+
+        if(firstParent.energyLevel >= secondParent.energyLevel){
+            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
+        }else{
+            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
+        }
+
+        this.energyLevel = 10; //Haven't touched on energy aspect during breeding yet, so for now the level is hard-coded
     }
 
     @Override
@@ -58,5 +68,21 @@ public class Animal implements WorldElement{
     @Override
     public Vector2d getPosition() {
         return position;
+    }
+
+    public void loseEnergy(int amountLost){
+        energyLevel = Math.max(0, energyLevel - amountLost);
+    }
+
+    public void gainEnergy(int amountGained){
+        energyLevel += amountGained;
+    }
+
+    public int getEnergyLevel(){
+        return energyLevel;
+    }
+
+    public Genes getGenes(){
+        return genes;
     }
 }
