@@ -76,7 +76,7 @@ public class Genes {
             int randomIndex = random.nextInt(0, genes.length);
             int randomPossibleIndex = random.nextInt(0, 7);
 
-            //Making sure that we don't swap the random chosen gene with the same one
+            //Making sure that we don't swap the randomly chosen gene with itself
             int[] possibleGenes = new int[7];
             int index = 0;
 
@@ -93,7 +93,7 @@ public class Genes {
 
             int firstRandomIndex = random.nextInt(0, genes.length);
 
-            //Making sure first and second drawn indexes are not the same
+            //Making sure first and second randomly chosen indexes are not the same
             int[] possibleIndexes = new int[genes.length - 1];
 
             int index = 0;
