@@ -122,4 +122,8 @@ public class Genes {
     public int[] getGenesSequence(){
         return Arrays.copyOf(genes, genes.length);
     }
+
+    public int getGeneAtIndex(int index){
+        return genes[index];
+    }
 }
