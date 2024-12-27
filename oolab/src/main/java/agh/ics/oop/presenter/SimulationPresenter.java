@@ -129,7 +129,7 @@ public class SimulationPresenter implements MapChangeListener {
             grassMap.addObserver(this);
             this.setWorldMap(grassMap);
 
-            Simulation simulation = new Simulation(positions, directions, grassMap);
+            Simulation simulation = new Simulation(positions, grassMap);
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
             engine.runAsync();
         }
