@@ -39,7 +39,7 @@ public class Simulation implements Runnable{
 
     private void placeAnimals(List<Vector2d> startingPoints){
         for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point, 5,10);
+            Animal animal = new Animal(point, 10);
             System.out.println(Arrays.toString(animal.getGenes().getGenesSequence()));
             try {
                 map.place(animal);

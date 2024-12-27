@@ -9,32 +9,30 @@ public class Animal implements WorldElement{
 
     private MapDirection direction;
     private Vector2d position;
-
-    private final int amountOfGenes;
-
+    private static final int AMOUNT_OF_GENES = 8;  //= getAmountOfGenes() - TODO: Setting it to data from initial input
     private int geneTracker;
     private int energyLevel;
 
 
     //Constructor for initial animals
-    public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
-        this.amountOfGenes = amountOfGenes;
-        this.genes = new Genes(amountOfGenes);
 
+    public Animal(Vector2d position, int initialEnergyLevel) {
+        this.genes = new Genes(AMOUNT_OF_GENES);
         this.direction = NORTH;
         this.position = position;
         this.energyLevel = initialEnergyLevel;
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int amountOfGenes, int simulationVariants){
-        this.amountOfGenes = amountOfGenes;
-        this.geneTracker = chooseStartingGene(amountOfGenes);
+
+    public Animal(Animal firstParent, Animal secondParent, int simulationVariants){
+        this.geneTracker = chooseStartingGene();
 
         if(firstParent.energyLevel >= secondParent.energyLevel){
-            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
+            genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
         }else{
-            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
+            genes = new Genes(AMOUNT_OF_GENES, secondParent, firstParent, simulationVariants);
+
         }
 
         this.energyLevel = 10; //Haven't touched on energy aspect during breeding yet, so for now the level is hard-coded
@@ -86,7 +84,7 @@ public class Animal implements WorldElement{
 
         //Assuming that even if he cannot move to the position, he still turns towards it
 
-        geneTracker = (geneTracker + 1)%amountOfGenes;
+        geneTracker = (geneTracker + 1) % AMOUNT_OF_GENES;
         energyLevel -= 1;
     }
 
@@ -116,7 +114,7 @@ public class Animal implements WorldElement{
         return genes;
     }
 
-    private int chooseStartingGene(int amountOfGenes){
-        return new Random().nextInt(0,amountOfGenes);
+    private int chooseStartingGene(){
+        return new Random().nextInt(0, AMOUNT_OF_GENES);
     }
 }
