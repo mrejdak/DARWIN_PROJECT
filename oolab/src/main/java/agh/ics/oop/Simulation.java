@@ -11,10 +11,14 @@ public class Simulation implements Runnable{
 
     private final List<Animal> animals;
     private final WorldMap map;
+    private final int mutationVariant;
+    private final int initialEnergyLevel;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map) {
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel) {
 
         this.map = map;
+        this.mutationVariant = mutationVariant;
+        this.initialEnergyLevel = initialEnergyLevel;
         this.animals = new ArrayList<>();
 
         placeAnimals(startingPoints);
@@ -39,7 +43,7 @@ public class Simulation implements Runnable{
 
     private void placeAnimals(List<Vector2d> startingPoints){
         for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point, 10);
+            Animal animal = new Animal(point, initialEnergyLevel);
             System.out.println(Arrays.toString(animal.getGenes().getGenesSequence()));
             try {
                 map.place(animal);
@@ -50,6 +54,25 @@ public class Simulation implements Runnable{
             }
         }
     }
+
+    private void breedAnimals(Animal firstParent, Animal secondParent){
+        try {
+            Animal child = new Animal(firstParent, secondParent, mutationVariant);
+            map.place(child);
+            animals.add(child);
+            int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
+            int secondParentsEnergyLoss = (int) Math.round(secondParent.getEnergyLevel() * 0.2);
+            firstParent.loseEnergy(firstParentsEnergyLoss);
+            secondParent.loseEnergy(secondParentsEnergyLoss);
+            child.setEnergyLevel(firstParentsEnergyLoss + secondParentsEnergyLoss);
+        }
+        catch(IncorrectPositionException e){
+            System.out.println("Exception: " + e.getMessage());
+            // should never catch, since breeding already happens on coordinates that are accessible to animals
+        }
+
+    }
+
     public List<Animal> getAnimals() {
         return new ArrayList<>(animals);
     }

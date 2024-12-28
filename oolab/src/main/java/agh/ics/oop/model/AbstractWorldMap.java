@@ -9,7 +9,7 @@ import java.util.*;
 public abstract class AbstractWorldMap implements WorldMap {
 
     private final MapVisualizer vis;
-    protected final Map<Vector2d, Animal> animals = new HashMap<>();
+    protected final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
     private final UUID mapId;
 
@@ -38,7 +38,8 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public void place(Animal animal) throws IncorrectPositionException {
         if (canMoveTo(animal.getPosition())) {
-            animals.put(animal.getPosition(), animal);
+            animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
+            animals.get(animal.getPosition()).add(animal);
             notifyAllObservers("Animal placed on map");
             return;
         }
@@ -51,9 +52,13 @@ public abstract class AbstractWorldMap implements WorldMap {
         Vector2d oldPosition = animal.getPosition();
         MapDirection oldDirection = animal.getDirection();
         animal.move(this);
-        animals.remove(oldPosition);
-        animals.put(animal.getPosition(), animal);
         if (!oldPosition.equals(animal.getPosition())) {
+            animals.get(oldPosition).remove(animal);
+            if (animals.get(oldPosition).isEmpty()){
+                animals.remove(oldPosition);
+            }
+            animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
+            animals.get(animal.getPosition()).add(animal);
             notifyAllObservers("Animal moved from " + oldPosition + " to " + animal.getPosition());
         }
         if (!oldDirection.equals(animal.getDirection())){
@@ -70,17 +75,28 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return (this.animals.get(position) == null);
+//        return (this.animals.get(position) == null);
+        return true;  // returns true, since multiple animals can now exist on the same square
     }
 
     @Override
     public WorldElement objectAt(Vector2d position) {
-        return this.animals.get(position);
+        ArrayList<Animal> objectsAt = this.animals.get(position);
+        if (objectsAt != null) {
+            return this.animals.get(position).getFirst();
+            // a random animal occupying that square is returned for now
+            // TODO: return list of all animals on that square (only if necessary)
+        }
+        return null;
     }
 
     @Override
     public Collection<WorldElement> getElements() {
-        return new ArrayList<>(animals.values());
+        Collection<WorldElement> elements = new ArrayList<>();
+        for (ArrayList<Animal> animalsOnSquare : animals.values()) {
+            elements.addAll(animalsOnSquare);
+        }
+        return elements;
     }
 
     @Override
