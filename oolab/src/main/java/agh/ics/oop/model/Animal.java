@@ -10,6 +10,7 @@ public class Animal implements WorldElement{
     private MapDirection direction;
     private Vector2d position;
     private static final int AMOUNT_OF_GENES = 8;  //= getAmountOfGenes() - TODO: Setting it to data from initial input
+    private final Random random = new Random();
     private int geneTracker;
     private int energyLevel;
 
@@ -34,8 +35,9 @@ public class Animal implements WorldElement{
             genes = new Genes(AMOUNT_OF_GENES, secondParent, firstParent, simulationVariants);
 
         }
-
-        this.energyLevel = 10; //Haven't touched on energy aspect during breeding yet, so for now the level is hard-coded
+        this.direction = MapDirection.values()[random.nextInt(8)];
+        this.position = firstParent.getPosition();
+        // energy is set during breeding
     }
 
     @Override
@@ -56,24 +58,6 @@ public class Animal implements WorldElement{
         return this.position.equals(position);
     }
 
-//    public void move(MoveDirection direction, WorldMap map){
-//        switch(direction) {
-//            case FORWARD -> {
-//                Vector2d potentialPosition = this.position.add(this.direction.toUnitVector());
-//                if (map.canMoveTo(potentialPosition)) {
-//                    this.position = potentialPosition;
-//                }
-//            }
-//            case BACKWARD -> {
-//                Vector2d potentialPosition = this.position.subtract(this.direction.toUnitVector());
-//                if (map.canMoveTo(potentialPosition)) {
-//                    this.position = potentialPosition;
-//                }
-//            }
-//            case LEFT -> this.direction = this.direction.previous();
-//            case RIGHT -> this.direction = this.direction.next();
-//        }
-//    }
     public void move(MoveValidator map){
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
 
@@ -85,7 +69,7 @@ public class Animal implements WorldElement{
         //Assuming that even if he cannot move to the position, he still turns towards it
 
         geneTracker = (geneTracker + 1) % AMOUNT_OF_GENES;
-        energyLevel -= 1;
+        this.loseEnergy(1);
     }
 
 
@@ -106,6 +90,10 @@ public class Animal implements WorldElement{
         energyLevel += amountGained;
     }
 
+    public void setEnergyLevel(int newEnergyLevel){
+        energyLevel = newEnergyLevel;
+    }
+
     public int getEnergyLevel(){
         return energyLevel;
     }
@@ -115,6 +103,6 @@ public class Animal implements WorldElement{
     }
 
     private int chooseStartingGene(){
-        return new Random().nextInt(0, AMOUNT_OF_GENES);
+        return random.nextInt(0, AMOUNT_OF_GENES);
     }
 }
