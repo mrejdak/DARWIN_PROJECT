@@ -5,6 +5,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class Simulation implements Runnable{
@@ -63,7 +64,9 @@ public class Simulation implements Runnable{
             int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
             int secondParentsEnergyLoss = (int) Math.round(secondParent.getEnergyLevel() * 0.2);
             firstParent.loseEnergy(firstParentsEnergyLoss);
+            firstParent.addChildren();
             secondParent.loseEnergy(secondParentsEnergyLoss);
+            secondParent.addChildren();
             child.setEnergyLevel(firstParentsEnergyLoss + secondParentsEnergyLoss);
         }
         catch(IncorrectPositionException e){
@@ -71,6 +74,20 @@ public class Simulation implements Runnable{
             // should never catch, since breeding already happens on coordinates that are accessible to animals
         }
 
+    }
+
+    private Comparator<? super Animal> customComparator(){
+        //TODO: custom comparator to chain all 4 comparisons in one sort
+        return null;
+    }
+
+    private List<Animal> resolveConflicts(List<Animal> conflictedAnimals, int animalsWithPriority){
+        List<Animal> prioritizedAnimals = new ArrayList<>();
+        conflictedAnimals.sort(customComparator());
+        for(int i = 0; i < animalsWithPriority; i++){
+            prioritizedAnimals.add(conflictedAnimals.get(i));
+        }
+        return prioritizedAnimals;
     }
 
     public List<Animal> getAnimals() {
