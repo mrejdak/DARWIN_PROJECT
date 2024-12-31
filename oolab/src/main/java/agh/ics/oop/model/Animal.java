@@ -13,6 +13,7 @@ public class Animal implements WorldElement{
     private final Random random = new Random();
     private int geneTracker;
     private int energyLevel;
+    private int childrenCounter = 0;
 
 
     //Constructor for initial animals
@@ -96,6 +97,14 @@ public class Animal implements WorldElement{
 
     public int getEnergyLevel(){
         return energyLevel;
+    }
+
+    public void addChildren(){
+        this.childrenCounter += 1;
+    }
+
+    public int getChildrenCounter(){
+        return childrenCounter;
     }
 
     public Genes getGenes(){
