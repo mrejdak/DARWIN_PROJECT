@@ -4,7 +4,7 @@ import java.util.Random;
 
 import static agh.ics.oop.model.MapDirection.*;
 
-public class Animal implements WorldElement{
+public class Animal implements WorldElement, Comparable<Animal>{
     private final Genes genes;
 
     private MapDirection direction;
@@ -14,6 +14,7 @@ public class Animal implements WorldElement{
     private int geneTracker;
     private int energyLevel;
     private int childrenCounter = 0;
+    private int dateOfBirth;  // TODO: add age functionality
 
 
     //Constructor for initial animals
@@ -113,5 +114,21 @@ public class Animal implements WorldElement{
 
     private int chooseStartingGene(){
         return random.nextInt(0, AMOUNT_OF_GENES);
+    }
+
+    @Override
+    public int compareTo(Animal comparedTo) {
+
+        int energyDifference = this.getEnergyLevel() - comparedTo.getEnergyLevel();
+        if (energyDifference != 0) {
+            return energyDifference;
+        }
+
+        int ageDifference = comparedTo.dateOfBirth - this.dateOfBirth;  // TODO: add age comparison
+        if (ageDifference != 0) {
+            return ageDifference;
+        }
+
+        return this.getChildrenCounter() - comparedTo.getChildrenCounter();
     }
 }
