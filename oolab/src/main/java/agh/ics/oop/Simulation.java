@@ -5,7 +5,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 public class Simulation implements Runnable{
@@ -76,14 +76,9 @@ public class Simulation implements Runnable{
 
     }
 
-    private Comparator<? super Animal> customComparator(){
-        //TODO: custom comparator to chain all 4 comparisons in one sort
-        return null;
-    }
-
     private List<Animal> resolveConflicts(List<Animal> conflictedAnimals, int animalsWithPriority){
         List<Animal> prioritizedAnimals = new ArrayList<>();
-        conflictedAnimals.sort(customComparator());
+        Collections.sort(conflictedAnimals);
         for(int i = 0; i < animalsWithPriority; i++){
             prioritizedAnimals.add(conflictedAnimals.get(i));
         }
