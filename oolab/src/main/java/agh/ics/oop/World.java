@@ -10,12 +10,13 @@ public class World {
 
     public static void main(String[] input) {
 
-            GrassField grassField = new GrassField(5);
+            Earth earth = new Earth(10,10);
+//            GrassField grassField = new GrassField(5);
             List<Vector2d> position = List.of(new Vector2d(2,2));
 
-            grassField.addObserver(new ConsoleMapDisplay());
+            earth.addObserver(new ConsoleMapDisplay());
 
-            Simulation simulation = new Simulation(position, grassField, 1, 10);
+            Simulation simulation = new Simulation(position, earth, 1, 10);
             simulation.run();
 
 //        try {

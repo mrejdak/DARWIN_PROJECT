@@ -1,16 +1,14 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Simulation implements Runnable{
 
-    private final List<Animal> animals;
+    private final ArrayList<Animal> animals;
     private final WorldMap map;
     private final int mutationVariant;
     private final int initialEnergyLevel;
@@ -27,19 +25,41 @@ public class Simulation implements Runnable{
 
     @Override
     public void run(){
-
-        while(animals.get(0).getEnergyLevel() > 0) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                System.out.println("InterruptedException: " + e.getMessage());
-            }
-            map.move(animals.get(0));
-
-            System.out.printf("Animal %d: %s%n", 0,
-                    animals.get(0).getPosition());
-
+        plantsGrowth();
+        while(!animals.isEmpty()){
+            removeDeadAnimals();
+            moveAnimals();
+            //TODO
+            feedAnimals();
+            breedAllAnimals();
+            //
+            plantsGrowth();
         }
+    }
+
+    private void removeDeadAnimals(){
+        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals);
+
+        //Cleaning animals off the map
+        map.cleanDeadAnimals(positions);
+    }
+
+    private void moveAnimals(){
+        for(Animal animal: animals){
+            map.move(animal);
+        }
+    }
+
+    private void feedAnimals(){
+
+    }
+
+    private void breedAllAnimals(){
+
+    }
+
+    private void plantsGrowth(){
+        map.growPlants();
     }
 
     private void placeAnimals(List<Vector2d> startingPoints){
@@ -76,11 +96,11 @@ public class Simulation implements Runnable{
 
     }
 
-    private List<Animal> resolveConflicts(List<Animal> conflictedAnimals, int animalsWithPriority){
-        List<Animal> prioritizedAnimals = new ArrayList<>();
+    private Animal[] resolveConflicts(List<Animal> conflictedAnimals){
+        Animal[] prioritizedAnimals = new Animal[2];
         Collections.sort(conflictedAnimals);
-        for(int i = 0; i < animalsWithPriority; i++){
-            prioritizedAnimals.add(conflictedAnimals.get(i));
+        for(int i = 0; i < 2; i++){
+            prioritizedAnimals[i] = conflictedAnimals.get(i);
         }
         return prioritizedAnimals;
     }

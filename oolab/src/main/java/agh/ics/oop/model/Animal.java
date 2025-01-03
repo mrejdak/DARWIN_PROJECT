@@ -64,6 +64,20 @@ public class Animal implements WorldElement, Comparable<Animal>{
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
 
         Vector2d newPosition = position.add(direction.toUnitVector());
+        if(map.getClass() == Earth.class){
+            Vector2d lowerLeft = ((Earth) map).getCurrentBounds().lowerLeft();
+            Vector2d upperRight = ((Earth) map).getCurrentBounds().upperRight();
+
+            if(!newPosition.precedes(upperRight)){
+                newPosition = new Vector2d(lowerLeft.getX(), newPosition.getY());
+            }
+
+            if(!newPosition.follows(lowerLeft)){
+                newPosition = new Vector2d(upperRight.getX(), newPosition.getY());
+            }
+
+        }
+
         if(map.canMoveTo(newPosition)){
             position = newPosition;
         }
