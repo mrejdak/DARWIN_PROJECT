@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+
 public enum MapDirection {
 
     //Changed the unit vector functionality a bit

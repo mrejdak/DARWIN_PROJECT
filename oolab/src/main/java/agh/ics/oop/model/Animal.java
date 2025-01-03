@@ -9,8 +9,11 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     private MapDirection direction;
     private Vector2d position;
+
     private static final int AMOUNT_OF_GENES = 8;  //= getAmountOfGenes() - TODO: Setting it to data from initial input
+
     private final Random random = new Random();
+
     private int geneTracker;
     private int energyLevel;
     private int childrenCounter = 0;
@@ -27,15 +30,12 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     //Constructor for children
-
     public Animal(Animal firstParent, Animal secondParent, int simulationVariants){
         this.geneTracker = chooseStartingGene();
-
         if(firstParent.energyLevel >= secondParent.energyLevel){
             genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
         }else{
             genes = new Genes(AMOUNT_OF_GENES, secondParent, firstParent, simulationVariants);
-
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();
