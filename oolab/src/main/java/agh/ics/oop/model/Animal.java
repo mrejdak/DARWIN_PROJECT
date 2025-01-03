@@ -64,9 +64,15 @@ public class Animal implements WorldElement, Comparable<Animal>{
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
 
         Vector2d newPosition = position.add(direction.toUnitVector());
+        //For now it is checking the Earth class, but I think the map with ebb and flow
+        //Will also have the same functionality so this if statement might be redundant
         if(map.getClass() == Earth.class){
             Vector2d lowerLeft = ((Earth) map).getCurrentBounds().lowerLeft();
             Vector2d upperRight = ((Earth) map).getCurrentBounds().upperRight();
+
+            if(!newPosition.precedesVertically(upperRight) || !newPosition.follows(lowerLeft)){
+                direction = MapDirection.values()[(direction.ordinal() + 4)%8];
+            }
 
             if(!newPosition.precedes(upperRight)){
                 newPosition = new Vector2d(lowerLeft.getX(), newPosition.getY());
