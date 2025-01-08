@@ -9,17 +9,16 @@ import java.util.*;
 
 public abstract class AbstractWorldMap implements WorldMap {
     private final Random random = new Random();
-
-    protected final Vector2d mapLowerLeft = new Vector2d(0, 0);
-    protected final Vector2d mapUpperRight;
-    private final Boundary bounds;
-    private final int[] preferredStrip = new int[2];
-
-    private final MapVisualizer vis;
-    protected final Map<Vector2d, Plant> plants = new HashMap<>();
-    protected final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
     private final UUID mapId;
+    private final MapVisualizer vis;
+
+    private final int[] preferredStrip = new int[2];
+
+    protected final Boundary bounds;
+    protected final Map<Vector2d, Plant> plants = new HashMap<>();
+    protected final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
+
 
 
     public void addObserver(MapChangeListener observer){
@@ -38,10 +37,9 @@ public abstract class AbstractWorldMap implements WorldMap {
 
 
     public AbstractWorldMap(int width, int height){
-        mapUpperRight = new Vector2d(width-1, height-1);
-        bounds = new Boundary(mapLowerLeft, this.mapUpperRight);
+        bounds = new Boundary(new Vector2d(0,0), new Vector2d(width-1,height-1));
 
-        calculatePreferredStrip();
+        calculatePreferredStrip(height);
 
         this.mapId = UUID.randomUUID();
         this.vis = new MapVisualizer(this);
@@ -116,11 +114,8 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-//        return (this.animals.get(position) == null);
-        return true;  // returns true, since multiple animals can now exist on the same square
+        return position.followsVertically(bounds.lowerLeft()) && position.precedesVertically(bounds.upperRight());
     }
-
-
 
     @Override
     public WorldElement objectAt(Vector2d position) {
@@ -144,11 +139,9 @@ public abstract class AbstractWorldMap implements WorldMap {
         return elements;
     }
 
-    private void calculatePreferredStrip(){
-        double highestRowNumber = bounds.upperRight().getY();
+    private void calculatePreferredStrip(int height){
+        double highestRowNumber = height - 1;
         double meanValue = (highestRowNumber)/2;
-
-        int height = (int) highestRowNumber + 1;
 
         if(Math.floor(meanValue) == Math.ceil(meanValue)){
             preferredStrip[0] = (int) meanValue;
@@ -166,7 +159,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public Boundary getCurrentBounds() {
-        return new Boundary(bounds.lowerLeft(), bounds.upperRight());
+        return bounds;
     }
 
     @Override

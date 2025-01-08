@@ -10,7 +10,7 @@ public class World {
 
     public static void main(String[] input) {
 
-            Earth earth = new Earth(10,10);
+            Earth earth = new Earth(10,11);
             List<Vector2d> position = List.of(new Vector2d(0,0));
 
             earth.addObserver(new ConsoleMapDisplay());
