@@ -59,6 +59,10 @@ public interface WorldMap extends MoveValidator {
      */
     WorldElement objectAt(Vector2d position);
 
+    boolean plantAt(Vector2d position);
+
+    void removePlant(Vector2d position);
+
     Collection<WorldElement> getElements();
 
     Boundary getCurrentBounds();

@@ -12,12 +12,15 @@ public class Simulation implements Runnable{
     private final WorldMap map;
     private final int mutationVariant;
     private final int initialEnergyLevel;
+    private final int energyGainedFromFood;
+    private int date = 0;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel) {
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel, int energyGainedFromFood) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
         this.initialEnergyLevel = initialEnergyLevel;
+        this.energyGainedFromFood = energyGainedFromFood;
         this.animals = new ArrayList<>();
 
         placeAnimals(startingPoints);
@@ -28,10 +31,9 @@ public class Simulation implements Runnable{
         plantsGrowth();
         while(!animals.isEmpty()){
             removeDeadAnimals();
-            moveAnimals();
-            //TODO
-            feedAnimals();
-            breedAllAnimals();
+            Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
+            feedAnimals(movedAnimals);
+            breedAllAnimals(); //TODO
             //
             plantsGrowth();
         }
@@ -44,14 +46,30 @@ public class Simulation implements Runnable{
         map.cleanDeadAnimals(positions);
     }
 
-    private void moveAnimals(){
+    private Map<Vector2d, ArrayList<Animal>> moveAnimals(){
+        Map<Vector2d, ArrayList<Animal>> animalsMoved = new HashMap<>();
+        Vector2d oldPosition;
         for(Animal animal: animals){
+            oldPosition = animal.getPosition();
             map.move(animal);
+            if (!oldPosition.equals(animal.getPosition())) {
+                animalsMoved.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
+                animalsMoved.get(animal.getPosition()).add(animal);
+            }
         }
+
+        return animalsMoved;
     }
 
-    private void feedAnimals(){
+    private void feedAnimals(Map<Vector2d, ArrayList<Animal>> movedAnimals){
+        for (Vector2d position : movedAnimals.keySet()) {
+            if (map.plantAt(position)) {
+                ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
+                Animal[] strongestAnimals = resolveConflicts(conflictedAnimals);
 
+                consumeGrass(strongestAnimals[0]);
+            }
+        }
     }
 
     private void breedAllAnimals(){
@@ -93,10 +111,15 @@ public class Simulation implements Runnable{
             System.out.println("Exception: " + e.getMessage());
             // should never catch, since breeding already happens on coordinates that are accessible to animals
         }
-
     }
 
-    private Animal[] resolveConflicts(List<Animal> conflictedAnimals){
+    private void consumeGrass(Animal animal) {
+        Vector2d position = animal.getPosition();
+        map.removePlant(position);
+        animal.gainEnergy(energyGainedFromFood);
+    }
+
+    private Animal[] resolveConflicts(ArrayList<Animal> conflictedAnimals){
         Animal[] prioritizedAnimals = new Animal[2];
         Collections.sort(conflictedAnimals);
         for(int i = 0; i < 2; i++){

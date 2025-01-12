@@ -130,6 +130,16 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
+    public boolean plantAt(Vector2d position) {
+        return (plants.get(position) != null);
+    }
+
+    @Override
+    public void removePlant(Vector2d position){
+        plants.remove(position);
+    }
+
+    @Override
     public Collection<WorldElement> getElements() {
         Collection<WorldElement> elements = new ArrayList<>();
         for (ArrayList<Animal> animalsOnSquare : animals.values()) {
