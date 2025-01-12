@@ -14,6 +14,7 @@ public class Simulation implements Runnable{
     private final WorldMap map;
     private final int mutationVariant;
     private final int initialEnergyLevel;
+    private int date = 0;
 
     public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel) {
 
@@ -27,18 +28,20 @@ public class Simulation implements Runnable{
 
     @Override
     public void run(){
+        while (!animals.isEmpty()) {
+            date += 1;
+            for (Animal animal : animals) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    System.out.println("InterruptedException: " + e.getMessage());
+                }
+                map.move(animal);
 
-        while(animals.get(0).getEnergyLevel() > 0) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                System.out.println("InterruptedException: " + e.getMessage());
+                System.out.printf("Animal %d: %s%n", 0,
+                        animal.getPosition());
+
             }
-            map.move(animals.get(0));
-
-            System.out.printf("Animal %d: %s%n", 0,
-                    animals.get(0).getPosition());
-
         }
     }
 
@@ -58,7 +61,7 @@ public class Simulation implements Runnable{
 
     private void breedAnimals(Animal firstParent, Animal secondParent){
         try {
-            Animal child = new Animal(firstParent, secondParent, mutationVariant);
+            Animal child = new Animal(firstParent, secondParent, mutationVariant, date);
             map.place(child);
             animals.add(child);
             int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
@@ -73,6 +76,11 @@ public class Simulation implements Runnable{
             System.out.println("Exception: " + e.getMessage());
             // should never catch, since breeding already happens on coordinates that are accessible to animals
         }
+    }
+
+    private void consumeGrass(Animal animal) {
+        // TODO when a map is done
+//        Vector2d position = animal.getPosition();
 
     }
 

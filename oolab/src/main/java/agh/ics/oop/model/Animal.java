@@ -23,16 +23,16 @@ public class Animal implements WorldElement, Comparable<Animal>{
     //Constructor for initial animals
     public Animal(Vector2d position, int initialEnergyLevel) {
         this.genes = new Genes(AMOUNT_OF_GENES);
-
+        this.dateOfBirth = 0;
         this.direction = NORTH;
         this.position = position;
         this.energyLevel = initialEnergyLevel;
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int simulationVariants){
+    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int dateOfBirth){
         this.geneTracker = chooseStartingGene();
-
+        this.dateOfBirth = dateOfBirth;
         if(firstParent.energyLevel >= secondParent.energyLevel){
             genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
         }else{
