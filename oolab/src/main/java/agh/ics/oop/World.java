@@ -15,7 +15,7 @@ public class World {
 
             earth.addObserver(new ConsoleMapDisplay());
 
-            Simulation simulation = new Simulation(position, earth, 1, 10);
+            Simulation simulation = new Simulation(position, earth, 1, 10, 15);
             simulation.run();
 
 //        try {

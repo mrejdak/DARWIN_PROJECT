@@ -33,7 +33,7 @@ public class Simulation implements Runnable{
             removeDeadAnimals();
             Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
             feedAnimals(movedAnimals);
-            breedAllAnimals(); //TODO
+            breedAnimalsOnMap(movedAnimals);
             //
             plantsGrowth();
         }
@@ -65,15 +65,20 @@ public class Simulation implements Runnable{
         for (Vector2d position : movedAnimals.keySet()) {
             if (map.plantAt(position)) {
                 ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
-                Animal[] strongestAnimals = resolveConflicts(conflictedAnimals);
-
-                consumeGrass(strongestAnimals[0]);
+                resolveConflicts(conflictedAnimals);
+                consumeGrass(conflictedAnimals.getFirst());
             }
         }
     }
 
-    private void breedAllAnimals(){
-
+    private void breedAnimalsOnMap(Map<Vector2d, ArrayList<Animal>> movedAnimals){
+        for (Vector2d position : movedAnimals.keySet()) {
+            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
+            if (conflictedAnimals.size() > 1) {
+                resolveConflicts(conflictedAnimals);
+                breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1));
+            }
+        }
     }
 
     private void plantsGrowth(){
@@ -119,13 +124,9 @@ public class Simulation implements Runnable{
         animal.gainEnergy(energyGainedFromFood);
     }
 
-    private Animal[] resolveConflicts(ArrayList<Animal> conflictedAnimals){
-        Animal[] prioritizedAnimals = new Animal[2];
+    private void resolveConflicts(ArrayList<Animal> conflictedAnimals){
+        // might be unnecessary to make it a method, but it seems clearer
         Collections.sort(conflictedAnimals);
-        for(int i = 0; i < 2; i++){
-            prioritizedAnimals[i] = conflictedAnimals.get(i);
-        }
-        return prioritizedAnimals;
     }
 
     public List<Animal> getAnimals() {
