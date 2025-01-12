@@ -10,8 +10,8 @@ class GrassFieldTest {
     @Test
     void testPlace() {
         WorldMap grassMap = new GrassField(10);
-        Animal animal1 = new Animal(new Vector2d(2, 2));
-        Animal animal2 = new Animal(new Vector2d(2, 2));
+        Animal animal1 = new Animal(new Vector2d(2, 2), 1,10);
+        Animal animal2 = new Animal(new Vector2d(2, 2), 1,10);
 
         assertDoesNotThrow(() -> grassMap.place(animal1));
 
@@ -25,8 +25,8 @@ class GrassFieldTest {
         Vector2d position1 = new Vector2d(1, 3);
         Vector2d position2 = new Vector2d(0, 3);
 
-        Animal animal1 = new Animal(position1);
-        Animal animal2 = new Animal(position2);
+        Animal animal1 = new Animal(position1, 1,10);
+        Animal animal2 = new Animal(position2, 1,10);
 
         try {
             grassMap.place(animal1);
@@ -70,7 +70,7 @@ class GrassFieldTest {
 
         Vector2d position1 = new Vector2d(11, 11);
 
-        Animal animal1 = new Animal(position1);
+        Animal animal1 = new Animal(position1, 1, 10);
 
         try {
             grassMap.place(animal1);
@@ -96,7 +96,7 @@ class GrassFieldTest {
         Vector2d position1 = new Vector2d(8,8);
         Vector2d position2 = new Vector2d(2,2);
 
-        Animal animal1 = new Animal(position1);
+        Animal animal1 = new Animal(position1, 1,10);
         try {
             grassMap.place(animal1);
         } catch (IncorrectPositionException e) {
