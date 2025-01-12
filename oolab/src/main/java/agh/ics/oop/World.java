@@ -15,7 +15,7 @@ public class World {
 
             grassField.addObserver(new ConsoleMapDisplay());
 
-            Simulation simulation = new Simulation(position, grassField);
+            Simulation simulation = new Simulation(position, grassField, 1, 10);
             simulation.run();
 
 //        try {

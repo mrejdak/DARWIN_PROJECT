@@ -1,6 +1,5 @@
 package agh.ics.oop.model;
 
-import java.util.Map;
 
 public enum MapDirection {
 

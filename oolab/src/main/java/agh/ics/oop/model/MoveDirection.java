@@ -1,5 +1,6 @@
 package agh.ics.oop.model;
 
+// TODO: remove this file if possible
 public enum MoveDirection {
     FORWARD,        //0
     FORWARD_RIGHT,  //1

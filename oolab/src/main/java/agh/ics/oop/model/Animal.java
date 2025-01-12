@@ -4,40 +4,43 @@ import java.util.Random;
 
 import static agh.ics.oop.model.MapDirection.*;
 
-public class Animal implements WorldElement{
+public class Animal implements WorldElement, Comparable<Animal>{
     private final Genes genes;
 
     private MapDirection direction;
     private Vector2d position;
 
-    private final int amountOfGenes;
+    private static final int AMOUNT_OF_GENES = 8;  //= getAmountOfGenes() - TODO: Setting it to data from initial input
+
+    private final Random random = new Random();
 
     private int geneTracker;
     private int energyLevel;
+    private int childrenCounter = 0;
+    private int dateOfBirth;  // TODO: add age functionality
 
 
     //Constructor for initial animals
-    public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
-        this.amountOfGenes = amountOfGenes;
-        this.genes = new Genes(amountOfGenes);
-
+    public Animal(Vector2d position, int initialEnergyLevel) {
+        this.genes = new Genes(AMOUNT_OF_GENES);
+        this.dateOfBirth = 0;
         this.direction = NORTH;
         this.position = position;
         this.energyLevel = initialEnergyLevel;
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int amountOfGenes, int simulationVariants){
-        this.amountOfGenes = amountOfGenes;
-        this.geneTracker = chooseStartingGene(amountOfGenes);
-
+    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int dateOfBirth){
+        this.geneTracker = chooseStartingGene();
+        this.dateOfBirth = dateOfBirth;
         if(firstParent.energyLevel >= secondParent.energyLevel){
-            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
+            genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
         }else{
-            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
+            genes = new Genes(AMOUNT_OF_GENES, secondParent, firstParent, simulationVariants);
         }
-
-        this.energyLevel = 10; //Haven't touched on energy aspect during breeding yet, so for now the level is hard-coded
+        this.direction = MapDirection.values()[random.nextInt(8)];
+        this.position = firstParent.getPosition();
+        // energy is set during breeding
     }
 
     @Override
@@ -58,24 +61,6 @@ public class Animal implements WorldElement{
         return this.position.equals(position);
     }
 
-//    public void move(MoveDirection direction, WorldMap map){
-//        switch(direction) {
-//            case FORWARD -> {
-//                Vector2d potentialPosition = this.position.add(this.direction.toUnitVector());
-//                if (map.canMoveTo(potentialPosition)) {
-//                    this.position = potentialPosition;
-//                }
-//            }
-//            case BACKWARD -> {
-//                Vector2d potentialPosition = this.position.subtract(this.direction.toUnitVector());
-//                if (map.canMoveTo(potentialPosition)) {
-//                    this.position = potentialPosition;
-//                }
-//            }
-//            case LEFT -> this.direction = this.direction.previous();
-//            case RIGHT -> this.direction = this.direction.next();
-//        }
-//    }
     public void move(MoveValidator map){
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
 
@@ -86,8 +71,8 @@ public class Animal implements WorldElement{
 
         //Assuming that even if he cannot move to the position, he still turns towards it
 
-        geneTracker = (geneTracker + 1)%amountOfGenes;
-        energyLevel -= 1;
+        geneTracker = (geneTracker + 1) % AMOUNT_OF_GENES;
+        this.loseEnergy(1);
     }
 
 
@@ -108,15 +93,43 @@ public class Animal implements WorldElement{
         energyLevel += amountGained;
     }
 
+    public void setEnergyLevel(int newEnergyLevel){
+        energyLevel = newEnergyLevel;
+    }
+
     public int getEnergyLevel(){
         return energyLevel;
+    }
+
+    public void addChildren(){
+        this.childrenCounter += 1;
+    }
+
+    public int getChildrenCounter(){
+        return childrenCounter;
     }
 
     public Genes getGenes(){
         return genes;
     }
 
-    private int chooseStartingGene(int amountOfGenes){
-        return new Random().nextInt(0,amountOfGenes);
+    private int chooseStartingGene(){
+        return random.nextInt(0, AMOUNT_OF_GENES);
+    }
+
+    @Override
+    public int compareTo(Animal comparedTo) {
+
+        int energyDifference = this.getEnergyLevel() - comparedTo.getEnergyLevel();
+        if (energyDifference != 0) {
+            return energyDifference;
+        }
+
+        int ageDifference = comparedTo.dateOfBirth - this.dateOfBirth;  // TODO: add age comparison
+        if (ageDifference != 0) {
+            return ageDifference;
+        }
+
+        return this.getChildrenCounter() - comparedTo.getChildrenCounter();
     }
 }
