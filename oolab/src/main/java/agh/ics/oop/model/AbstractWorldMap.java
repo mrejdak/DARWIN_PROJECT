@@ -12,6 +12,7 @@ public abstract class AbstractWorldMap implements WorldMap {
     protected final Map<Vector2d, ArrayList<Animal>> animals = new HashMap<>();
     private final List<MapChangeListener> observers = new ArrayList<>();
     private final UUID mapId;
+    private final Map<Vector2d, Grass> grassBlocks = new HashMap<>();
 
 
     public void addObserver(MapChangeListener observer){
@@ -88,6 +89,10 @@ public abstract class AbstractWorldMap implements WorldMap {
             // TODO: return list of all animals on that square (only if necessary)
         }
         return null;
+    }
+
+    public void removePlant(Vector2d position){
+        grassBlocks.remove(position);
     }
 
     @Override

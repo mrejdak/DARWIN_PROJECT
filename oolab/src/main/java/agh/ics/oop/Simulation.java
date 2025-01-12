@@ -14,13 +14,15 @@ public class Simulation implements Runnable{
     private final WorldMap map;
     private final int mutationVariant;
     private final int initialEnergyLevel;
+    private final int energyGainedFromFood;
     private int date = 0;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel) {
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel, int energyGainedFromFood) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
         this.initialEnergyLevel = initialEnergyLevel;
+        this.energyGainedFromFood = energyGainedFromFood;
         this.animals = new ArrayList<>();
 
         placeAnimals(startingPoints);
@@ -79,9 +81,9 @@ public class Simulation implements Runnable{
     }
 
     private void consumeGrass(Animal animal) {
-        // TODO when a map is done
-//        Vector2d position = animal.getPosition();
-
+        Vector2d position = animal.getPosition();
+        map.removePlant(position);
+        animal.gainEnergy(energyGainedFromFood);
     }
 
     private List<Animal> resolveConflicts(List<Animal> conflictedAnimals, int animalsWithPriority){
