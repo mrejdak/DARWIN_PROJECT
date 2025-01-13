@@ -4,7 +4,9 @@ import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
+import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Simulation implements Runnable{
 
@@ -13,14 +15,17 @@ public class Simulation implements Runnable{
     private final int mutationVariant;
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
+    private final int energyRequiredForBreeding;
     private int date = 0;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel, int energyGainedFromFood) {
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel,
+                      int energyGainedFromFood, int energyRequiredForBreeding) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
         this.initialEnergyLevel = initialEnergyLevel;
         this.energyGainedFromFood = energyGainedFromFood;
+        this.energyRequiredForBreeding = energyRequiredForBreeding;
         this.animals = new ArrayList<>();
 
         placeAnimals(startingPoints);
@@ -30,6 +35,7 @@ public class Simulation implements Runnable{
     public void run(){
         plantsGrowth();
         while(!animals.isEmpty()){
+            date += 1;
             removeDeadAnimals();
             Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
             feedAnimals(movedAnimals);
@@ -73,7 +79,10 @@ public class Simulation implements Runnable{
 
     private void breedAnimalsOnMap(Map<Vector2d, ArrayList<Animal>> movedAnimals){
         for (Vector2d position : movedAnimals.keySet()) {
-            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
+            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position).stream()
+                    .filter(animal -> animal.getEnergyLevel() >= energyRequiredForBreeding)
+                    .collect(Collectors.toCollection(ArrayList::new));
+//            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
             if (conflictedAnimals.size() > 1) {
                 resolveConflicts(conflictedAnimals);
                 breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1));
@@ -101,7 +110,7 @@ public class Simulation implements Runnable{
 
     private void breedAnimals(Animal firstParent, Animal secondParent){
         try {
-            Animal child = new Animal(firstParent, secondParent, mutationVariant);
+            Animal child = new Animal(firstParent, secondParent, mutationVariant, date);
             map.place(child);
             animals.add(child);
             int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
@@ -125,8 +134,9 @@ public class Simulation implements Runnable{
     }
 
     private void resolveConflicts(ArrayList<Animal> conflictedAnimals){
-        // might be unnecessary to make it a method, but it seems clearer
+        // might be unnecessary to make this into a method, but point of sorting and reversing seems clearer
         Collections.sort(conflictedAnimals);
+        Collections.reverse(conflictedAnimals);
     }
 
     public List<Animal> getAnimals() {

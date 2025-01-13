@@ -17,7 +17,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     private int geneTracker;
     private int energyLevel;
     private int childrenCounter = 0;
-    private int dateOfBirth;  // TODO: add age functionality
+    private final int dateOfBirth;
 
 
     //Constructor for initial animals
@@ -27,10 +27,11 @@ public class Animal implements WorldElement, Comparable<Animal>{
         this.direction = NORTH;
         this.position = position;
         this.energyLevel = initialEnergyLevel;
+        this.dateOfBirth = 0;
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int simulationVariants){
+    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int dateOfBirth){
         this.geneTracker = chooseStartingGene();
         if(firstParent.energyLevel >= secondParent.energyLevel){
             genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
@@ -39,6 +40,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();
+        this.dateOfBirth = dateOfBirth;
         // energy is set during breeding
     }
 
@@ -143,7 +145,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
             return energyDifference;
         }
 
-        int ageDifference = comparedTo.dateOfBirth - this.dateOfBirth;  // TODO: add age comparison
+        int ageDifference = comparedTo.dateOfBirth - this.dateOfBirth;
         if (ageDifference != 0) {
             return ageDifference;
         }
