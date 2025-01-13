@@ -12,14 +12,16 @@ public class Simulation implements Runnable{
 
     private final ArrayList<Animal> animals;
     private final WorldMap map;
+    private final int plantsPerDay;
     private final int mutationVariant;
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
     private final int energyRequiredForBreeding;
+    private final int startingPlantsCount;
     private int date = 0;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel,
-                      int energyGainedFromFood, int energyRequiredForBreeding) {
+
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel, int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
@@ -27,13 +29,15 @@ public class Simulation implements Runnable{
         this.energyGainedFromFood = energyGainedFromFood;
         this.energyRequiredForBreeding = energyRequiredForBreeding;
         this.animals = new ArrayList<>();
+        this.plantsPerDay = plantsPerDay;
+        this.startingPlantsCount = startingPlantsCount;
 
         placeAnimals(startingPoints);
     }
 
     @Override
     public void run(){
-        plantsGrowth();
+        plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             date += 1;
             removeDeadAnimals();
@@ -41,7 +45,7 @@ public class Simulation implements Runnable{
             feedAnimals(movedAnimals);
             breedAnimalsOnMap(movedAnimals);
             //
-            plantsGrowth();
+            plantsGrowth(plantsPerDay);
         }
     }
 
@@ -90,8 +94,8 @@ public class Simulation implements Runnable{
         }
     }
 
-    private void plantsGrowth(){
-        map.growPlants();
+    private void plantsGrowth(int plantsCount){
+        map.growPlants(plantsCount);
     }
 
     private void placeAnimals(List<Vector2d> startingPoints){

@@ -39,7 +39,7 @@ public interface WorldMap extends MoveValidator {
     /**
      * Function spawns new plants on the map.
      */
-    void growPlants();
+    void growPlants(int plantsPerDay);
 
     /**
      * Return true if given position on the map is occupied. Should not be
