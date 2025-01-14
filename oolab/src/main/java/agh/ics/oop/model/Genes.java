@@ -17,7 +17,7 @@ public class Genes {
     public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, int simulationVariant){
         genes = new int[numberOfGenes];
         calculateGenes(strongerParent, weakerParent, numberOfGenes);
-        mutation(simulationVariant);
+        mutation(simulationVariant, 2); //amount of mutations is hardcoded for now TODO: add variable to constructor
     }
 
     private void calculateGenes(Animal strongerParent, Animal weakerParent, int numberOfGenes){
@@ -70,47 +70,60 @@ public class Genes {
                 (int) Math.floor((numerator/denominator) * numberOfGenes);
     }
 
-    private void mutation(int simulationVariant){
-        if(simulationVariant == 0){ //Basic variant
-
-            int randomIndex = random.nextInt(0, genes.length);
-            int randomPossibleIndex = random.nextInt(0, 7);
-
-            //Making sure that we don't swap the randomly chosen gene with itself
-            int[] possibleGenes = new int[7];
-            int index = 0;
-
-            for(int i = 0; i < 8; i++){
-                if(i != genes[randomIndex]) {
-                    possibleGenes[index] = i;
-                    index++;
+    private void mutation(int simulationVariant, int amountOfMutations){
+        for(int i = 0; i < amountOfMutations; i++){
+            if(simulationVariant == 0){ //Basic variant
+                oneGeneMutation();
+            }else{                      //Additional variant "[2] podmianka"
+                double mutationChoice = random.nextDouble();
+                if(mutationChoice > 0.5){
+                    oneGeneMutation();
+                }
+                else{
+                    twoGenesSwap();
                 }
             }
-
-            genes[randomIndex] = possibleGenes[randomPossibleIndex];
-
-        }else{                      //Additional variant "[2] podmianka"
-
-            int firstRandomIndex = random.nextInt(0, genes.length);
-
-            //Making sure first and second randomly chosen indexes are not the same
-            int[] possibleIndexes = new int[genes.length - 1];
-
-            int index = 0;
-            for(int i = 0; i < genes.length; i++){
-                if(i != firstRandomIndex) {
-                    possibleIndexes[index] = i;
-                    index++;
-                }
-            }
-
-            int secondRandomIndex = possibleIndexes[random.nextInt(0, genes.length - 1)];
-
-            //Swapping the genes
-            int temp = genes[firstRandomIndex];
-            genes[firstRandomIndex] = genes[secondRandomIndex];
-            genes[secondRandomIndex] = temp;
         }
+    }
+
+    private void oneGeneMutation(){
+        int randomIndex = random.nextInt(0, genes.length);
+        int randomPossibleIndex = random.nextInt(0, 7);
+
+        //Making sure that we don't swap the randomly chosen gene with itself
+        int[] possibleGenes = new int[7];
+        int index = 0;
+
+        for(int i = 0; i < 8; i++){
+            if(i != genes[randomIndex]) {
+                possibleGenes[index] = i;
+                index++;
+            }
+        }
+
+        genes[randomIndex] = possibleGenes[randomPossibleIndex];
+    }
+
+    private void twoGenesSwap(){
+        int firstRandomIndex = random.nextInt(0, genes.length);
+
+        //Making sure first and second randomly chosen indexes are not the same
+        int[] possibleIndexes = new int[genes.length - 1];
+
+        int index = 0;
+        for(int i = 0; i < genes.length; i++){
+            if(i != firstRandomIndex) {
+                possibleIndexes[index] = i;
+                index++;
+            }
+        }
+
+        int secondRandomIndex = possibleIndexes[random.nextInt(0, genes.length - 1)];
+
+        //Swapping the genes
+        int temp = genes[firstRandomIndex];
+        genes[firstRandomIndex] = genes[secondRandomIndex];
+        genes[secondRandomIndex] = temp;
     }
 
     private void pickRandomGenes(int numberOfGenes){
