@@ -10,7 +10,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     private MapDirection direction;
     private Vector2d position;
 
-    private static final int AMOUNT_OF_GENES = 8;  //= getAmountOfGenes() - TODO: Setting it to data from initial input
+    private final int amountOfGenes;
 
     private final Random random = new Random();
 
@@ -22,8 +22,9 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     //Constructor for initial animals
 
-    public Animal(Vector2d position, int initialEnergyLevel) {
-        this.genes = new Genes(AMOUNT_OF_GENES);
+    public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
+        this.genes = new Genes(amountOfGenes);
+        this.amountOfGenes = amountOfGenes;
         this.direction = NORTH;
         this.position = position;
         this.energyLevel = initialEnergyLevel;
@@ -31,12 +32,13 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int dateOfBirth){
+    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int amountOfGenes, int dateOfBirth){
+        this.amountOfGenes = amountOfGenes;
         this.geneTracker = chooseStartingGene();
         if(firstParent.energyLevel >= secondParent.energyLevel){
-            genes = new Genes(AMOUNT_OF_GENES, firstParent, secondParent, simulationVariants);
+            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
         }else{
-            genes = new Genes(AMOUNT_OF_GENES, secondParent, firstParent, simulationVariants);
+            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();
@@ -91,7 +93,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
         //Assuming that even if he cannot move to the position, he still turns towards it
 
-        geneTracker = (geneTracker + 1) % AMOUNT_OF_GENES;
+        geneTracker = (geneTracker + 1) % amountOfGenes;
         this.loseEnergy(1);
     }
 
@@ -134,7 +136,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     private int chooseStartingGene(){
-        return random.nextInt(0, AMOUNT_OF_GENES);
+        return random.nextInt(0, amountOfGenes);
     }
 
     @Override
