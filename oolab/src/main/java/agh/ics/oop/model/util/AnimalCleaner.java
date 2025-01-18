@@ -2,22 +2,23 @@ package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.model.WorldMap;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 public class AnimalCleaner {
-    public static void cleanDeadAnimals(ArrayList<Animal> animals){
+    public static void cleanDeadAnimals(ArrayList<Animal> animals, WorldMap map){
 
-        List<Integer> indexes = findIndexes(animals);
+        List<Integer> indexes = findIndexes(animals, map);
 
         cleanAnimals(indexes, animals);
     }
 
-    public static HashSet<Vector2d> cleanDeadAnimalsFromSimulation(ArrayList<Animal> animals){
+    public static HashSet<Vector2d> cleanDeadAnimalsFromSimulation(ArrayList<Animal> animals, WorldMap map){
 
-        List<Integer> indexes = findIndexes(animals);
+        List<Integer> indexes = findIndexes(animals, map);
         HashSet<Vector2d> positions = findPositions(indexes, animals);
 
         cleanAnimals(indexes, animals);
@@ -25,12 +26,12 @@ public class AnimalCleaner {
         return positions;
     }
 
-    private static List<Integer> findIndexes(ArrayList<Animal> animals){
+    private static List<Integer> findIndexes(ArrayList<Animal> animals, WorldMap map){
         List<Integer> indexes = new ArrayList<>();
 
         for(int i = 0; i < animals.size(); i++){
             Animal potentiallyDead = animals.get(i);
-            if(potentiallyDead.getEnergyLevel() <= 0){
+            if(potentiallyDead.getEnergyLevel() <= 0 || map.isWaterPresent(potentiallyDead.getPosition())){
                 indexes.add(i);
             }
         }

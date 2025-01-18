@@ -14,6 +14,7 @@ public class Simulation implements Runnable{
     private final WorldMap map;
     private final int plantsPerDay;
     private final int mutationVariant;
+    private final int amountOfGenes;
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
     private final int energyRequiredForBreeding;
@@ -21,11 +22,12 @@ public class Simulation implements Runnable{
     private int date = 0;
 
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel,
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int amountOfGenes, int initialEnergyLevel,
                       int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
+        this.amountOfGenes = amountOfGenes;
         this.initialEnergyLevel = initialEnergyLevel;
         this.energyGainedFromFood = energyGainedFromFood;
         this.energyRequiredForBreeding = energyRequiredForBreeding;
@@ -51,7 +53,7 @@ public class Simulation implements Runnable{
     }
 
     private void removeDeadAnimals(){
-        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals);
+        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals, map);
 
         //Cleaning animals off the map
         map.cleanDeadAnimals(positions);
@@ -101,7 +103,7 @@ public class Simulation implements Runnable{
 
     private void placeAnimals(List<Vector2d> startingPoints){
         for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point, initialEnergyLevel);
+            Animal animal = new Animal(point, amountOfGenes, initialEnergyLevel);
             System.out.println(Arrays.toString(animal.getGenes().getGenesSequence()));
             try {
                 map.place(animal);
@@ -115,7 +117,7 @@ public class Simulation implements Runnable{
 
     private void breedAnimals(Animal firstParent, Animal secondParent){
         try {
-            Animal child = new Animal(firstParent, secondParent, mutationVariant, date);
+            Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date);
             map.place(child);
             animals.add(child);
             int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);

@@ -82,10 +82,15 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
+    public boolean isWaterPresent(Vector2d position){
+        return false;
+    }
+
+    @Override
     public void cleanDeadAnimals(HashSet<Vector2d> positions){
         for(Vector2d position: positions){
             ArrayList<Animal> animalsAtPosition = animals.get(position);
-            AnimalCleaner.cleanDeadAnimals(animalsAtPosition);
+            AnimalCleaner.cleanDeadAnimals(animalsAtPosition, this);
         }
     }
 

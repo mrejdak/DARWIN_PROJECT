@@ -31,6 +31,9 @@ public interface WorldMap extends MoveValidator {
      */
     void move(Animal animal);
 
+
+    boolean isWaterPresent(Vector2d position);
+
     /**
      * Cleans deceased animals from the map.
      */
