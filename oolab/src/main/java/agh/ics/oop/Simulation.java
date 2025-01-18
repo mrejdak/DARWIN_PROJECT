@@ -14,6 +14,7 @@ public class Simulation implements Runnable{
     private final WorldMap map;
     private final int plantsPerDay;
     private final int mutationVariant;
+    private final int frequencyOfTideChanges;
     private final int amountOfGenes;
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
@@ -22,11 +23,12 @@ public class Simulation implements Runnable{
     private int date = 0;
 
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int amountOfGenes, int initialEnergyLevel,
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int frequencyOfTideChanges, int amountOfGenes, int initialEnergyLevel,
                       int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
 
         this.map = map;
         this.mutationVariant = mutationVariant;
+        this.frequencyOfTideChanges = frequencyOfTideChanges;
         this.amountOfGenes = amountOfGenes;
         this.initialEnergyLevel = initialEnergyLevel;
         this.energyGainedFromFood = energyGainedFromFood;
@@ -43,6 +45,7 @@ public class Simulation implements Runnable{
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             date += 1;
+            if(date % frequencyOfTideChanges == 0) map.changeTide();
             removeDeadAnimals();
             Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
             feedAnimals(movedAnimals);

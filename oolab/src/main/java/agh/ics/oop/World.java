@@ -11,12 +11,16 @@ public class World {
     public static void main(String[] input) {
 
             Earth earth = new Earth(10,11);
+            AbstractWorldMap waterMap = new LowAndHighTides(10, 10, 2);
             List<Vector2d> position = List.of(new Vector2d(0,0));
 
             earth.addObserver(new ConsoleMapDisplay());
+            waterMap.addObserver(new ConsoleMapDisplay());
 
-            Simulation simulation = new Simulation(position, earth, 1, 10, 15, 8, 4, 6);
-            simulation.run();
+            Simulation simulation = new Simulation(position, earth, 1, 2, 8, 10, 15, 8, 4, 6);
+            Simulation simulation2 = new Simulation(position, waterMap, 1, 2, 8, 10, 15, 8, 4, 6);
+//            simulation.run();
+            simulation2.run();
 
 //        try {
 //            List<Simulation> simulationList = new ArrayList<>();

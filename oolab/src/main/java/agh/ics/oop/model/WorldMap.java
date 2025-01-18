@@ -31,6 +31,7 @@ public interface WorldMap extends MoveValidator {
      */
     void move(Animal animal);
 
+    void changeTide();
 
     boolean isWaterPresent(Vector2d position);
 

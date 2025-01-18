@@ -10,7 +10,6 @@ public class LowAndHighTides extends AbstractWorldMap{
     private final HashMap<Vector2d, Water> lowTideWaterBlocks = new HashMap<>();
     private final HashMap<Vector2d, Water> highTideWaterBlocks = new HashMap<>();
     private boolean isHighTide = false;
-    // TODO add ebbs and flows
 
     public LowAndHighTides(int width, int height, int numOfWaterSources) {
         super(width, height);
@@ -27,6 +26,7 @@ public class LowAndHighTides extends AbstractWorldMap{
         }
     }
 
+    @Override
     public void changeTide(){
         isHighTide = !isHighTide;
     }

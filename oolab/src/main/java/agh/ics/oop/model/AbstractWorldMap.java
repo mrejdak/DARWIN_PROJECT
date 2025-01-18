@@ -82,6 +82,11 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
+    public void changeTide() {
+        // nothing happens by default
+    }
+
+    @Override
     public boolean isWaterPresent(Vector2d position){
         return false;
     }
