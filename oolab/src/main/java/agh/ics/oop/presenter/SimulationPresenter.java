@@ -4,9 +4,11 @@ import agh.ics.oop.Simulation;
 import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.util.SimulationParameters;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -19,18 +21,52 @@ import java.util.List;
 import static agh.ics.oop.OptionsParser.parseOptions;
 
 public class SimulationPresenter implements MapChangeListener {
+    @FXML
+    private TextField plantEnergyField;
+    @FXML
+    private TextField dailyPlantsField;
+    @FXML
+    private TextField initialAnimalsField;
+    @FXML
+    private TextField animalEnergyField;
+    @FXML
+    private TextField fullEnergyField;
+    @FXML
+    private TextField parentEnergyField;
+    @FXML
+    private TextField minMutationsField;
+    @FXML
+    private TextField maxMutationsField;
+    @FXML
+    private ComboBox<String> mutationVariantField;
+    @FXML
+    private TextField genomeLengthField;
+    @FXML
+    private TextField mapHeightField;
+    @FXML
+    private TextField mapWidthField;
+    @FXML
+    private ComboBox<String> mapVariantField;
+    @FXML
+    private TextField initialPlantsField;
+
 
     @FXML
     private Label infoLabel;
-    @FXML
-    private TextField moveListField;
+
+//    @FXML
+//    private TextField mapWidthField;
+//    @FXML
+//    private TextField mapHeightField;
     @FXML
     private Label moveDescription;
     @FXML
     private GridPane mapGrid;
-
-    private int mapWidth;
+//
+//    private int mapWidth = Integer.parseInt(mapWidthField.getText());
+//    private int mapHeight = Integer.parseInt(mapHeightField.getText());
     private int mapHeight;
+    private int mapWidth;
 //    private int xMin;
 //    private int yMin;
 //    private int xMax;
@@ -130,18 +166,42 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     public void onSimulationStartClicked(){
         try {
-            String moveInput = moveListField.getText();
-            List<MoveDirection> directions = parseOptions(moveInput.split(" "));
-            List<Vector2d> positions = List.of(new Vector2d(2, 2), new Vector2d(3, 4));
-            AbstractWorldMap earthMap = new Earth(10, 10);
-            earthMap.addObserver(this);
-            this.setWorldMap(earthMap);
-            this.setMapDimensions(earthMap.getCurrentBounds());
+            if (mapHeightField.getText().isEmpty() || mapWidthField.getText().isEmpty() || initialPlantsField.getText().isEmpty() ||
+                    plantEnergyField.getText().isEmpty() || dailyPlantsField.getText().isEmpty() || initialAnimalsField.getText().isEmpty() ||
+                    animalEnergyField.getText().isEmpty() || fullEnergyField.getText().isEmpty() || parentEnergyField.getText().isEmpty() ||
+                    minMutationsField.getText().isEmpty() || maxMutationsField.getText().isEmpty() || genomeLengthField.getText().isEmpty()) {
+                throw new IllegalArgumentException("All fields must be filled out");
+            }
 
-            Simulation simulation = new Simulation(positions, earthMap, 1, 2, 8, 10, 10, 7, 4, 6);
-            // simulation parameters are hard-coded for now
-            SimulationEngine engine = new SimulationEngine(List.of(simulation));
-            engine.runAsync();
+            int mapHeight = Integer.parseInt(mapHeightField.getText());
+            int mapWidth = Integer.parseInt(mapWidthField.getText());
+            String mapVariant = mapVariantField.getValue();
+            int initialPlants = Integer.parseInt(initialPlantsField.getText());
+            int plantEnergy = Integer.parseInt(plantEnergyField.getText());
+            int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
+            int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
+            int animalEnergy = Integer.parseInt(animalEnergyField.getText());
+            int fullEnergy = Integer.parseInt(fullEnergyField.getText());
+            int parentEnergy = Integer.parseInt(parentEnergyField.getText());
+            int minMutations = Integer.parseInt(minMutationsField.getText());
+            int maxMutations = Integer.parseInt(maxMutationsField.getText());
+            String mutationVariant = mutationVariantField.getValue();
+            int genomeLength = Integer.parseInt(genomeLengthField.getText());
+
+            SimulationParameters simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant, initialPlants, plantEnergy, dailyPlants, initialAnimals,animalEnergy, fullEnergy, parentEnergy, minMutations, maxMutations, mutationVariant, genomeLength);
+            System.out.println(simulationParameters);
+            //            String moveInput = moveListField.getText();
+//            List<MoveDirection> directions = parseOptions(moveInput.split(" "));
+//            List<Vector2d> positions = List.of(new Vector2d(2, 2), new Vector2d(3, 4));
+//            AbstractWorldMap earthMap = new Earth(10, 10);
+//            earthMap.addObserver(this);
+//            this.setWorldMap(earthMap);
+//            this.setMapDimensions(earthMap.getCurrentBounds());
+//
+//            Simulation simulation = new Simulation(positions, earthMap, 1, 2, 8, 10, 10, 7, 4, 6);
+//            // simulation parameters are hard-coded for now
+//            SimulationEngine engine = new SimulationEngine(List.of(simulation));
+//            engine.runAsync();
         }
         catch (IllegalArgumentException e){
             System.out.println("Error: " + e.getMessage());

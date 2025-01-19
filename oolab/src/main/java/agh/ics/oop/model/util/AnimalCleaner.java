@@ -49,7 +49,7 @@ public class AnimalCleaner {
 
     private static void cleanAnimals(List<Integer> indexes, List<Animal> animals){
         if(!indexes.isEmpty()){
-            for(int i = animals.size()-1; i > -1; i--){
+            for(int i = indexes.size()-1; i > -1; i--){
                 animals.remove((int) indexes.get(i));
             }
         }

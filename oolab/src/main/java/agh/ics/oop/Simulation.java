@@ -2,7 +2,9 @@ package agh.ics.oop;
 
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.AnimalCleaner;
+import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
+import agh.ics.oop.model.util.SimulationParameters;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -21,24 +23,24 @@ public class Simulation implements Runnable{
     private final int energyRequiredForBreeding;
     private final int startingPlantsCount;
     private int date = 0;
+    private final Random random = new Random();
 
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int frequencyOfTideChanges, int amountOfGenes, int initialEnergyLevel,
-                      int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
-
+    public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
         this.map = map;
-        this.mutationVariant = mutationVariant;
-        this.frequencyOfTideChanges = frequencyOfTideChanges;
-        this.amountOfGenes = amountOfGenes;
-        this.initialEnergyLevel = initialEnergyLevel;
-        this.energyGainedFromFood = energyGainedFromFood;
-        this.energyRequiredForBreeding = energyRequiredForBreeding;
+        int startingAnimalCount = simulationParameters.initialAnimals();
+        this.mutationVariant = simulationParameters.mutationVariant().equals("Standard") ? 0 : 1;
+        this.frequencyOfTideChanges = 4;// TODO choose if we take it as a parameter or hardcode it
+        this.amountOfGenes = simulationParameters.genomeLength();
+        this.initialEnergyLevel = simulationParameters.animalEnergy();
+        this.energyGainedFromFood = simulationParameters.plantEnergy();
+        this.energyRequiredForBreeding = simulationParameters.fullEnergy();
         this.animals = new ArrayList<>();
-        this.plantsPerDay = plantsPerDay;
-        this.startingPlantsCount = startingPlantsCount;
+        this.plantsPerDay = simulationParameters.dailyPlants();
+        this.startingPlantsCount = simulationParameters.initialPlants();
 
-        placeAnimals(startingPoints);
+        placeAnimals(startingAnimalCount);
     }
 
     @Override
@@ -112,9 +114,14 @@ public class Simulation implements Runnable{
         map.growPlants(plantsCount);
     }
 
-    private void placeAnimals(List<Vector2d> startingPoints){
-        for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point, amountOfGenes, initialEnergyLevel);
+    private void placeAnimals(int startingAnimalCount){
+        Boundary mapBoundary = map.getCurrentBounds();
+        for (int i = 0; i < startingAnimalCount; i++) {
+            Vector2d position = new Vector2d(
+                    random.nextInt(0, mapBoundary.upperRight().getX() + 1),
+                    random.nextInt(0, mapBoundary.upperRight().getY() + 1)
+            );
+            Animal animal = new Animal(position, amountOfGenes, initialEnergyLevel);
             System.out.println(Arrays.toString(animal.getGenes().getGenesSequence()));
             try {
                 map.place(animal);

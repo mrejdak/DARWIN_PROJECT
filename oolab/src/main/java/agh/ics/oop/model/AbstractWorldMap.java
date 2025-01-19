@@ -96,6 +96,9 @@ public abstract class AbstractWorldMap implements WorldMap {
         for(Vector2d position: positions){
             ArrayList<Animal> animalsAtPosition = animals.get(position);
             AnimalCleaner.cleanDeadAnimals(animalsAtPosition, this);
+            if(animals.get(position).isEmpty()){
+                animals.remove(position);
+            }
         }
     }
 
