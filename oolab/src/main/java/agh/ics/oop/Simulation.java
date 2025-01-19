@@ -6,7 +6,6 @@ import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.SimulationParameters;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,7 @@ public class Simulation implements Runnable{
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
     private final int energyRequiredForBreeding;
+    private final int parentEnergyLoss;
     private final int startingPlantsCount;
     private int date = 0;
     private final Random random = new Random();
@@ -35,7 +35,8 @@ public class Simulation implements Runnable{
         this.amountOfGenes = simulationParameters.genomeLength();
         this.initialEnergyLevel = simulationParameters.animalEnergy();
         this.energyGainedFromFood = simulationParameters.plantEnergy();
-        this.energyRequiredForBreeding = simulationParameters.fullEnergy();
+        this.energyRequiredForBreeding = simulationParameters.requiredEnergy();
+        this.parentEnergyLoss = simulationParameters.parentEnergy();
         this.animals = new ArrayList<>();
         this.plantsPerDay = simulationParameters.dailyPlants();
         this.startingPlantsCount = simulationParameters.initialPlants();
@@ -138,13 +139,11 @@ public class Simulation implements Runnable{
             Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date);
             map.place(child);
             animals.add(child);
-            int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
-            int secondParentsEnergyLoss = (int) Math.round(secondParent.getEnergyLevel() * 0.2);
-            firstParent.loseEnergy(firstParentsEnergyLoss);
+            firstParent.loseEnergy(parentEnergyLoss);
             firstParent.addChildren();
-            secondParent.loseEnergy(secondParentsEnergyLoss);
+            secondParent.loseEnergy(parentEnergyLoss);
             secondParent.addChildren();
-            child.setEnergyLevel(firstParentsEnergyLoss + secondParentsEnergyLoss);
+            child.setEnergyLevel(parentEnergyLoss * 2);
         }
         catch(IncorrectPositionException e){
             System.out.println("Exception: " + e.getMessage());

@@ -44,7 +44,7 @@
             <Label text="Initial Animal Energy" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
             <TextField fx:id="animalEnergyField" maxWidth="200" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
             <Label text="Energy needed to breed" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-            <TextField fx:id="fullEnergyField" maxWidth="200" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+            <TextField fx:id="requiredEnergyField" maxWidth="200" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
             <Label text="Parent Energy for Offspring" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
             <TextField fx:id="parentEnergyField" maxWidth="200" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
             <Label text="Minimum Mutations" GridPane.rowIndex="10" GridPane.columnIndex="0"/>

@@ -1,7 +1,5 @@
 package agh.ics.oop.presenter;
 
-import agh.ics.oop.Simulation;
-import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.SimulationParameters;
@@ -16,9 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 import java.util.Collection;
-import java.util.List;
-
-import static agh.ics.oop.OptionsParser.parseOptions;
 
 public class SimulationPresenter implements MapChangeListener {
     @FXML
@@ -30,7 +25,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private TextField animalEnergyField;
     @FXML
-    private TextField fullEnergyField;
+    private TextField requiredEnergyField;
     @FXML
     private TextField parentEnergyField;
     @FXML
@@ -168,7 +163,7 @@ public class SimulationPresenter implements MapChangeListener {
         try {
             if (mapHeightField.getText().isEmpty() || mapWidthField.getText().isEmpty() || initialPlantsField.getText().isEmpty() ||
                     plantEnergyField.getText().isEmpty() || dailyPlantsField.getText().isEmpty() || initialAnimalsField.getText().isEmpty() ||
-                    animalEnergyField.getText().isEmpty() || fullEnergyField.getText().isEmpty() || parentEnergyField.getText().isEmpty() ||
+                    animalEnergyField.getText().isEmpty() || requiredEnergyField.getText().isEmpty() || parentEnergyField.getText().isEmpty() ||
                     minMutationsField.getText().isEmpty() || maxMutationsField.getText().isEmpty() || genomeLengthField.getText().isEmpty()) {
                 throw new IllegalArgumentException("All fields must be filled out");
             }
@@ -181,14 +176,16 @@ public class SimulationPresenter implements MapChangeListener {
             int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
             int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
             int animalEnergy = Integer.parseInt(animalEnergyField.getText());
-            int fullEnergy = Integer.parseInt(fullEnergyField.getText());
+            int requiredEnergy = Integer.parseInt(requiredEnergyField.getText());
             int parentEnergy = Integer.parseInt(parentEnergyField.getText());
             int minMutations = Integer.parseInt(minMutationsField.getText());
             int maxMutations = Integer.parseInt(maxMutationsField.getText());
             String mutationVariant = mutationVariantField.getValue();
             int genomeLength = Integer.parseInt(genomeLengthField.getText());
 
-            SimulationParameters simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant, initialPlants, plantEnergy, dailyPlants, initialAnimals,animalEnergy, fullEnergy, parentEnergy, minMutations, maxMutations, mutationVariant, genomeLength);
+            SimulationParameters simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
+                    initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
+                    minMutations, maxMutations, mutationVariant, genomeLength);
             System.out.println(simulationParameters);
             //            String moveInput = moveListField.getText();
 //            List<MoveDirection> directions = parseOptions(moveInput.split(" "));
