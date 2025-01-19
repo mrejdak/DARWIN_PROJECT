@@ -21,7 +21,6 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
 
     //Constructor for initial animals
-
     public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
         this.genes = new Genes(amountOfGenes);
         this.amountOfGenes = amountOfGenes;
@@ -35,6 +34,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int amountOfGenes, int dateOfBirth){
         this.amountOfGenes = amountOfGenes;
         this.geneTracker = chooseStartingGene();
+        this.dateOfBirth = dateOfBirth;
         if(firstParent.energyLevel >= secondParent.energyLevel){
             genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
         }else{

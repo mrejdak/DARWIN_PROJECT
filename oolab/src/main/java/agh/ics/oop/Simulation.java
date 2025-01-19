@@ -26,6 +26,7 @@ public class Simulation implements Runnable{
     public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int frequencyOfTideChanges, int amountOfGenes, int initialEnergyLevel,
                       int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
 
+
         this.map = map;
         this.mutationVariant = mutationVariant;
         this.frequencyOfTideChanges = frequencyOfTideChanges;
@@ -66,6 +67,12 @@ public class Simulation implements Runnable{
         Map<Vector2d, ArrayList<Animal>> animalsMoved = new HashMap<>();
         Vector2d oldPosition;
         for(Animal animal: animals){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException: " + e.getMessage());
+            }
+
             oldPosition = animal.getPosition();
             map.move(animal);
             if (!oldPosition.equals(animal.getPosition())) {
@@ -97,6 +104,7 @@ public class Simulation implements Runnable{
                 resolveConflicts(conflictedAnimals);
                 breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1));
             }
+
         }
     }
 
