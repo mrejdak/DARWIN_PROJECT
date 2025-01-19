@@ -11,8 +11,9 @@ public class LowAndHighTides extends AbstractWorldMap{
     private final HashMap<Vector2d, Water> highTideWaterBlocks = new HashMap<>();
     private boolean isHighTide = false;
 
-    public LowAndHighTides(int width, int height, int numOfWaterSources) {
+    public LowAndHighTides(int width, int height) {
         super(width, height);
+        int numOfWaterSources = (width*height)/10;
         RandomPointsGenerator randomPointsGenerator = new RandomPointsGenerator(numOfWaterSources);
         for (int i = 0; i < numOfWaterSources; i++) {
             Vector2d waterSourcePosition = randomPointsGenerator.generate();

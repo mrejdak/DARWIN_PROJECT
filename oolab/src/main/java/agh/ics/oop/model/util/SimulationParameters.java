@@ -26,11 +26,17 @@ public record SimulationParameters(
         if (initialPlants < 0) {
             throw new IllegalArgumentException("Initial plant count must be non-negative");
         }
+        if (initialPlants > mapWidth*mapHeight){
+            throw new IllegalArgumentException("Initial plant count must not be grater than the number of tiles on map");
+        }
         if (plantEnergy <= 0) {
             throw new IllegalArgumentException("Energy given by a plant must be greater than 0");
         }
         if (dailyPlants <= 0) {
             throw new IllegalArgumentException("Plants per day must be positive");
+        }
+        if (dailyPlants > mapWidth*mapHeight){
+            throw new IllegalArgumentException("Plants per day must not be grater than the number of tiles on map");
         }
         if (initialAnimals <= 0) {
             throw new IllegalArgumentException("Initial animals must be positive");
@@ -65,9 +71,6 @@ public record SimulationParameters(
         if (maxMutations > genomeLength) {
             throw new IllegalArgumentException("Max number of mutations must not be greater than length of genome");
         }
-
-        dailyPlants = Math.min(dailyPlants, mapWidth*mapHeight);
-        initialPlants = Math.min(initialPlants, mapHeight*mapWidth);
     }
 
     @Override

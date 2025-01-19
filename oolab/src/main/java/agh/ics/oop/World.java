@@ -28,7 +28,7 @@ public class World {
                     7);
 
             Earth earth = new Earth(simulationParameters.mapWidth(),simulationParameters.mapHeight());
-            AbstractWorldMap waterMap = new LowAndHighTides(simulationParameters.mapWidth(),simulationParameters.mapHeight(), 2);
+            AbstractWorldMap waterMap = new LowAndHighTides(simulationParameters.mapWidth(),simulationParameters.mapHeight());
 
             earth.addObserver(new ConsoleMapDisplay());
             waterMap.addObserver(new ConsoleMapDisplay());

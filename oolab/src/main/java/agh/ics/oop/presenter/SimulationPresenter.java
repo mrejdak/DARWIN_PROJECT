@@ -1,5 +1,8 @@
 package agh.ics.oop.presenter;
 
+import agh.ics.oop.Simulation;
+import agh.ics.oop.SimulationApp;
+import agh.ics.oop.SimulationEngine;
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.SimulationParameters;
@@ -14,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 import java.util.Collection;
+import java.util.List;
 
 public class SimulationPresenter implements MapChangeListener {
     @FXML
@@ -67,8 +71,8 @@ public class SimulationPresenter implements MapChangeListener {
 //    private int xMax;
 //    private int yMax;
     private WorldMap worldMap;
-    private int cellWidth;
-    private int cellHeight;
+    private int cellWidth = 50;
+    private int cellHeight = 50;
 
 
     public void setWorldMap(WorldMap worldMap) {
@@ -187,6 +191,20 @@ public class SimulationPresenter implements MapChangeListener {
                     initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
                     minMutations, maxMutations, mutationVariant, genomeLength);
             System.out.println(simulationParameters);
+
+            AbstractWorldMap map;
+            switch (mapVariant){
+                case "Earth" -> map = new Earth(mapWidth, mapHeight);
+                case "Tides" -> map = new LowAndHighTides(mapWidth, mapHeight);
+                default -> throw new IllegalArgumentException("Wrong map type"); //should never throw
+            }
+            map.addObserver(this);
+            this.setWorldMap(map);
+
+            Simulation simulation = new Simulation(map, simulationParameters);
+            SimulationEngine engine = new SimulationEngine(List.of(simulation));
+            engine.runAsync();
+
             //            String moveInput = moveListField.getText();
 //            List<MoveDirection> directions = parseOptions(moveInput.split(" "));
 //            List<Vector2d> positions = List.of(new Vector2d(2, 2), new Vector2d(3, 4));
