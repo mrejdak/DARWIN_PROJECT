@@ -1,55 +1,120 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Simulation implements Runnable{
 
-    private final List<Animal> animals;
+    private final ArrayList<Animal> animals;
     private final WorldMap map;
+    private final int plantsPerDay;
     private final int mutationVariant;
+    private final int frequencyOfTideChanges;
+    private final int amountOfGenes;
     private final int initialEnergyLevel;
     private final int energyGainedFromFood;
+    private final int energyRequiredForBreeding;
+    private final int startingPlantsCount;
     private int date = 0;
 
-    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int initialEnergyLevel, int energyGainedFromFood) {
+
+    public Simulation(List<Vector2d> startingPoints, WorldMap map, int mutationVariant, int frequencyOfTideChanges, int amountOfGenes, int initialEnergyLevel,
+                      int energyGainedFromFood, int energyRequiredForBreeding, int plantsPerDay, int startingPlantsCount) {
+
 
         this.map = map;
         this.mutationVariant = mutationVariant;
+        this.frequencyOfTideChanges = frequencyOfTideChanges;
+        this.amountOfGenes = amountOfGenes;
         this.initialEnergyLevel = initialEnergyLevel;
         this.energyGainedFromFood = energyGainedFromFood;
+        this.energyRequiredForBreeding = energyRequiredForBreeding;
         this.animals = new ArrayList<>();
+        this.plantsPerDay = plantsPerDay;
+        this.startingPlantsCount = startingPlantsCount;
 
         placeAnimals(startingPoints);
     }
 
     @Override
     public void run(){
-        while (!animals.isEmpty()) {
+        plantsGrowth(startingPlantsCount);
+        while(!animals.isEmpty()){
             date += 1;
-            for (Animal animal : animals) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    System.out.println("InterruptedException: " + e.getMessage());
-                }
-                map.move(animal);
+            if(date % frequencyOfTideChanges == 0) map.changeTide();
+            removeDeadAnimals();
+            Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
+            feedAnimals(movedAnimals);
+            breedAnimalsOnMap(movedAnimals);
+            //
+            plantsGrowth(plantsPerDay);
+        }
+    }
 
-                System.out.printf("Animal %d: %s%n", 0,
-                        animal.getPosition());
+    private void removeDeadAnimals(){
+        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals, map);
 
+        //Cleaning animals off the map
+        map.cleanDeadAnimals(positions);
+    }
+
+    private Map<Vector2d, ArrayList<Animal>> moveAnimals(){
+        Map<Vector2d, ArrayList<Animal>> animalsMoved = new HashMap<>();
+        Vector2d oldPosition;
+        for(Animal animal: animals){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException: " + e.getMessage());
+            }
+
+            oldPosition = animal.getPosition();
+            map.move(animal);
+            if (!oldPosition.equals(animal.getPosition())) {
+                animalsMoved.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
+                animalsMoved.get(animal.getPosition()).add(animal);
+            }
+        }
+
+        return animalsMoved;
+    }
+
+    private void feedAnimals(Map<Vector2d, ArrayList<Animal>> movedAnimals){
+        for (Vector2d position : movedAnimals.keySet()) {
+            if (map.plantAt(position)) {
+                ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
+                resolveConflicts(conflictedAnimals);
+                consumeGrass(conflictedAnimals.getFirst());
             }
         }
     }
 
+    private void breedAnimalsOnMap(Map<Vector2d, ArrayList<Animal>> movedAnimals){
+        for (Vector2d position : movedAnimals.keySet()) {
+            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position).stream()
+                    .filter(animal -> animal.getEnergyLevel() >= energyRequiredForBreeding)
+                    .collect(Collectors.toCollection(ArrayList::new));
+//            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
+            if (conflictedAnimals.size() > 1) {
+                resolveConflicts(conflictedAnimals);
+                breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1));
+            }
+
+        }
+    }
+
+    private void plantsGrowth(int plantsCount){
+        map.growPlants(plantsCount);
+    }
+
     private void placeAnimals(List<Vector2d> startingPoints){
         for (Vector2d point : startingPoints) {
-            Animal animal = new Animal(point, initialEnergyLevel);
+            Animal animal = new Animal(point, amountOfGenes, initialEnergyLevel);
             System.out.println(Arrays.toString(animal.getGenes().getGenesSequence()));
             try {
                 map.place(animal);
@@ -63,7 +128,7 @@ public class Simulation implements Runnable{
 
     private void breedAnimals(Animal firstParent, Animal secondParent){
         try {
-            Animal child = new Animal(firstParent, secondParent, mutationVariant, date);
+            Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date);
             map.place(child);
             animals.add(child);
             int firstParentsEnergyLoss = (int) Math.round(firstParent.getEnergyLevel() * 0.2);
@@ -86,13 +151,10 @@ public class Simulation implements Runnable{
         animal.gainEnergy(energyGainedFromFood);
     }
 
-    private List<Animal> resolveConflicts(List<Animal> conflictedAnimals, int animalsWithPriority){
-        List<Animal> prioritizedAnimals = new ArrayList<>();
+    private void resolveConflicts(ArrayList<Animal> conflictedAnimals){
+        // might be unnecessary to make this into a method, but point of sorting and reversing seems clearer
         Collections.sort(conflictedAnimals);
-        for(int i = 0; i < animalsWithPriority; i++){
-            prioritizedAnimals.add(conflictedAnimals.get(i));
-        }
-        return prioritizedAnimals;
+        Collections.reverse(conflictedAnimals);
     }
 
     public List<Animal> getAnimals() {

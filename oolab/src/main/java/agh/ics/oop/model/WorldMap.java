@@ -6,6 +6,7 @@ import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -30,6 +31,20 @@ public interface WorldMap extends MoveValidator {
      */
     void move(Animal animal);
 
+    void changeTide();
+
+    boolean isWaterPresent(Vector2d position);
+
+    /**
+     * Cleans deceased animals from the map.
+     */
+    void cleanDeadAnimals(HashSet<Vector2d> positions);
+
+    /**
+     * Function spawns new plants on the map.
+     */
+    void growPlants(int plantsPerDay);
+
     /**
      * Return true if given position on the map is occupied. Should not be
      * confused with canMove since there might be empty positions where the animal
@@ -47,6 +62,9 @@ public interface WorldMap extends MoveValidator {
      * @return animal or null if the position is not occupied.
      */
     WorldElement objectAt(Vector2d position);
+
+
+    boolean plantAt(Vector2d position);
 
     void removePlant(Vector2d position);
 

@@ -27,6 +27,10 @@ public class Vector2d {
         return x >= other.x && y >= other.y;
     }
 
+    public boolean precedesVertically(Vector2d other){ return y <= other.y;}
+
+    public boolean followsVertically(Vector2d other){ return y >= other.y;}
+
     public Vector2d add(Vector2d other) {
         return new Vector2d(x + other.x, y + other.y);
     }
