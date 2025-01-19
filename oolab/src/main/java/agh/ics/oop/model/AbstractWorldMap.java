@@ -163,9 +163,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
-    public void removePlant(Vector2d position){
-        grassBlocks.remove(position);
-    }
 
     @Override
     public Collection<WorldElement> getElements() {

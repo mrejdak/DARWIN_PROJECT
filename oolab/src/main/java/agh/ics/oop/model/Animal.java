@@ -42,7 +42,6 @@ public class Animal implements WorldElement, Comparable<Animal>{
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();
-        this.dateOfBirth = dateOfBirth;
         // energy is set during breeding
     }
 
