@@ -20,7 +20,7 @@ public class World {
                     2,
                     3,
                     10,
-                    5,
+                    6,
                     3,
                     1,
                     3,
@@ -35,8 +35,8 @@ public class World {
 
             Simulation simulation = new Simulation(earth, simulationParameters);
             Simulation simulation2 = new Simulation(waterMap, simulationParameters);
-            simulation.run();
-//            simulation2.run();
+//            simulation.run();
+            simulation2.run();
 
 //        try {
 //            List<Simulation> simulationList = new ArrayList<>();

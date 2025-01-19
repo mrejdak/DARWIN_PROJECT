@@ -1,6 +1,6 @@
 package agh.ics.oop.model;
 
-public class Water {
+public class Water implements WorldElement {
     private final Vector2d position;
 
     public Water(Vector2d position) {
@@ -9,5 +9,10 @@ public class Water {
 
     public Vector2d getPosition() {
         return position;
+    }
+
+    @Override
+    public String toString() {
+        return "#";
     }
 }
