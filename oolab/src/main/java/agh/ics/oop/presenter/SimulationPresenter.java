@@ -29,25 +29,33 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML
     private GridPane mapGrid;
 
-    private int xMin;
-    private int yMin;
-    private int xMax;
-    private int yMax;
     private int mapWidth;
     private int mapHeight;
+//    private int xMin;
+//    private int yMin;
+//    private int xMax;
+//    private int yMax;
     private WorldMap worldMap;
-    private static final int CELL_WIDTH = 30;
-    private static final int CELL_HEIGHT = 30;
+    private int cellWidth;
+    private int cellHeight;
 
 
     public void setWorldMap(WorldMap worldMap) {
         this.worldMap = worldMap;
     }
 
+    public void setMapDimensions(Boundary bounds){
+        mapWidth = bounds.upperRight().getX() - bounds.lowerLeft().getX();
+        mapHeight = bounds.upperRight().getY() - bounds.lowerLeft().getY();
+        cellWidth = 450 / mapWidth;
+        cellHeight = 450 / mapHeight;
+
+    }
+
 
     private void drawMap() {
         clearGrid();
-        updateBoundaries();
+//        updateBoundaries();
         gridColumns();
         gridRows();
         addElements();
@@ -56,38 +64,38 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
 
-    private void updateBoundaries(){
-        Boundary bounds =  worldMap.getCurrentBounds();
-        xMin = bounds.lowerLeft().getX();
-        yMin = bounds.lowerLeft().getY();
-        xMax = bounds.upperRight().getX();
-        yMax = bounds.upperRight().getY();
-        mapWidth = xMax - xMin + 1;
-        mapHeight = yMax - yMin + 1;
-        System.out.println(bounds.upperRight());
-        System.out.println(bounds.lowerLeft());
-        System.out.println(mapWidth);
-        System.out.println(mapHeight);
-    }
+//    private void updateBoundaries(){
+//        Boundary bounds =  worldMap.getCurrentBounds();
+//        xMin = bounds.lowerLeft().getX();
+//        yMin = bounds.lowerLeft().getY();
+//        xMax = bounds.upperRight().getX();
+//        yMax = bounds.upperRight().getY();
+//        mapWidth = xMax - xMin + 1;
+//        mapHeight = yMax - yMin + 1;
+//        System.out.println(bounds.upperRight());
+//        System.out.println(bounds.lowerLeft());
+//        System.out.println(mapWidth);
+//        System.out.println(mapHeight);
+//    }
 
 
     private void gridColumns(){
-        mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
+        mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
         for(int i=0; i<mapWidth; i++){
-            Label label = new Label(Integer.toString(i + xMin));
-            GridPane.setHalignment(label, HPos.CENTER);
-            mapGrid.getColumnConstraints().add(new ColumnConstraints(CELL_WIDTH));
-            mapGrid.add(label, i+1, 0);
+//            Label label = new Label(Integer.toString(i));
+//            GridPane.setHalignment(label, HPos.CENTER);
+            mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
+//            mapGrid.add(label, i+1, 0);
         }
     }
 
     private void gridRows(){
-        mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
+        mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
         for(int i=0; i<mapHeight; i++){
-            Label label = new Label(Integer.toString(yMax - i));
-            GridPane.setHalignment(label, HPos.CENTER);
-            mapGrid.getRowConstraints().add(new RowConstraints(CELL_HEIGHT));
-            mapGrid.add(label, 0, i+1);
+//            Label label = new Label(Integer.toString(mapHeight - 1 - i));
+//            GridPane.setHalignment(label, HPos.CENTER);
+            mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
+//            mapGrid.add(label, 0, i+1);
         }
     }
 
@@ -97,7 +105,7 @@ public class SimulationPresenter implements MapChangeListener {
         for (WorldElement element : elements) {
             Vector2d pos = element.getPosition();
             Label elementLabel = new Label(worldMap.objectAt(pos).toString());
-            mapGrid.add(elementLabel, pos.getX() - xMin + 1, yMax - pos.getY() + 1);
+            mapGrid.add(elementLabel, pos.getX(), pos.getY());
             GridPane.setHalignment(elementLabel, HPos.CENTER);
         }
     }
@@ -125,11 +133,12 @@ public class SimulationPresenter implements MapChangeListener {
             String moveInput = moveListField.getText();
             List<MoveDirection> directions = parseOptions(moveInput.split(" "));
             List<Vector2d> positions = List.of(new Vector2d(2, 2), new Vector2d(3, 4));
-            AbstractWorldMap grassMap = new GrassField(10);
-            grassMap.addObserver(this);
-            this.setWorldMap(grassMap);
+            AbstractWorldMap earthMap = new Earth(10, 10);
+            earthMap.addObserver(this);
+            this.setWorldMap(earthMap);
+            this.setMapDimensions(earthMap.getCurrentBounds());
 
-            Simulation simulation = new Simulation(positions, grassMap, 1, 2, 8, 10, 10, 7, 4, 6);
+            Simulation simulation = new Simulation(positions, earthMap, 1, 2, 8, 10, 10, 7, 4, 6);
             // simulation parameters are hard-coded for now
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
             engine.runAsync();
