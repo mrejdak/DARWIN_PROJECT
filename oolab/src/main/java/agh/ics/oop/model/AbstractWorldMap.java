@@ -261,4 +261,18 @@ public abstract class AbstractWorldMap implements WorldMap {
         Boundary bounds = getCurrentBounds();
         return vis.draw(bounds.lowerLeft(), bounds.upperRight());
     }
+
+    @Override
+    public int getNumberOfAnimals(){
+        int counter = 0;
+        for(ArrayList<Animal> animalsOnSquare: animals.values()){
+            counter += animalsOnSquare.size();
+        }
+        return counter;
+    }
+
+    @Override
+    public int getNumberOfPlants(){
+        return plants.size();
+    };
 }

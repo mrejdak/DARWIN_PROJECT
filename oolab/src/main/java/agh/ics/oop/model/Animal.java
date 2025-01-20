@@ -31,14 +31,14 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, String simulationVariants, int amountOfGenes, int dateOfBirth){
+    public Animal(Animal firstParent, Animal secondParent, String simulationVariants, int amountOfGenes, int dateOfBirth, int amountOfMutations){
         this.amountOfGenes = amountOfGenes;
         this.geneTracker = chooseStartingGene();
         this.dateOfBirth = dateOfBirth;
         if(firstParent.energyLevel >= secondParent.energyLevel){
-            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
+            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants, amountOfMutations);
         }else{
-            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
+            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants, amountOfMutations);
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();

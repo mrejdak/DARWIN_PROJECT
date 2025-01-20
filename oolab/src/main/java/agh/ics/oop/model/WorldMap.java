@@ -72,6 +72,9 @@ public interface WorldMap extends MoveValidator {
 
     int[] getPreferredStrip();
 
+    int getNumberOfAnimals();
+    int getNumberOfPlants();
+
     Collection<WorldElement> getElements();
 
     Boundary getCurrentBounds();
