@@ -78,6 +78,8 @@ public interface WorldMap extends MoveValidator {
 
     CopyOnWriteArrayList<WorldElement> getElements();
 
+    CopyOnWriteArrayList<Animal> getAnimalsAt(Vector2d position);
+
     Boundary getCurrentBounds();
 
     UUID getID();

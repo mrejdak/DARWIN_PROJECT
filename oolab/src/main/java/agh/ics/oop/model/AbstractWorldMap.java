@@ -273,6 +273,10 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
+    public CopyOnWriteArrayList<Animal> getAnimalsAt(Vector2d position){
+        return animals.get(position) != null ? new CopyOnWriteArrayList<>(animals.get(position)) : new CopyOnWriteArrayList<>();
+    }
+    @Override
     public int getNumberOfPlants(){
         return plants.size();
     };

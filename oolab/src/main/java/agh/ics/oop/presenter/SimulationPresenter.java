@@ -57,7 +57,7 @@ public class SimulationPresenter implements MapChangeListener {
     private GridPane simulationGrid;
     private Label dayLabel;
     private Label currentAnimals;
-    private Label averageAnimals;
+    private Label currentWater;
     private Label currentPlants;
     private Button pauseButton;
 
@@ -76,6 +76,9 @@ public class SimulationPresenter implements MapChangeListener {
     private int cellHeight;
     private final SimulationApp simulationApp = new SimulationApp();
     private final Map<String, Image> images = new HashMap<>();
+    private boolean isPaused = false;
+    private Animal lastSelectedAnimal;
+
     public void initializeGrid() {
         simulationGrid = new GridPane();
         simulationGrid.setGridLinesVisible(true);
@@ -97,43 +100,46 @@ public class SimulationPresenter implements MapChangeListener {
 
     }
 
-    private void initializeWindowElements(BorderPane root, Simulation simulation){
-        dayLabel = new Label();
-        currentAnimals = new Label();
-        averageAnimals = new Label();
-        currentPlants = new Label();
-        pauseButton = new Button("Pause");
-
-
+    public void initializeWindowElements(BorderPane root) {
         VBox vboxTop = new VBox();
         VBox vboxLeft = new VBox();
         VBox vboxBottom = new VBox();
+        VBox vboxRight = new VBox();
+
+        dayLabel = new Label();
+        currentAnimals = new Label();
+        currentPlants = new Label();
+        pauseButton = new Button("Pause");
 
         root.setCenter(simulationGrid);
         simulationGrid.setAlignment(Pos.CENTER);
 
         vboxTop.setAlignment(Pos.CENTER);
         vboxTop.getChildren().add(dayLabel);
+        vboxTop.getStyleClass().add("vbox-top");
+        dayLabel.getStyleClass().add("label-day");
         root.setTop(vboxTop);
-        dayLabel.setAlignment(Pos.CENTER);
 
         vboxLeft.getChildren().add(pauseButton);
         pauseButton.setOnAction(e -> {
             simulation.pause(pauseButton);
+            isPaused = !isPaused;
+            drawMap();
         });
-
         vboxLeft.setPadding(new Insets(10));
+        vboxLeft.getStyleClass().add("vbox-left");
         root.setLeft(vboxLeft);
 
         vboxBottom.getChildren().add(currentAnimals);
-        vboxBottom.getChildren().add(averageAnimals);
         vboxBottom.getChildren().add(currentPlants);
+        vboxBottom.getStyleClass().add("vbox-bottom");
         root.setBottom(vboxBottom);
 
-
+        vboxRight.getStyleClass().add("vbox-right");
+        root.setRight(vboxRight);
     }
 
-    private void setCellBackgrounds(){
+    private void setCellBackgrounds() {
         Image steppe = images.get("steppe");
         Image jungle = images.get("jungle");
         int[] prefStrip = worldMap.getPreferredStrip();
@@ -141,12 +147,11 @@ public class SimulationPresenter implements MapChangeListener {
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 ImageView imageView;
-                if(y <= prefStrip[1] && y >= prefStrip[0]){
+                if (y <= prefStrip[1] && y >= prefStrip[0]) {
                     imageView = new ImageView(jungle);
-                }else{
+                } else {
                     imageView = new ImageView(steppe);
                 }
-
                 imageView.setFitWidth(cellWidth);
                 imageView.setFitHeight(cellHeight);
                 simulationGrid.add(imageView, x, y);
@@ -207,6 +212,22 @@ public class SimulationPresenter implements MapChangeListener {
                 GridPane.setHalignment(imageView, HPos.CENTER);
             }
         }
+
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                Pane clickablePane = new Pane();
+                clickablePane.setPrefSize(cellWidth, cellHeight);
+                clickablePane.setStyle("-fx-background-color: transparent;");
+                final int finalX = x;
+                final int finalY = y;
+                if (isPaused) {
+                    clickablePane.setOnMouseClicked(event -> handleCellClick(finalX, finalY));
+                } else {
+                    clickablePane.setOnMouseClicked(null);
+                }
+                simulationGrid.add(clickablePane, x, y);
+            }
+        }
     }
 
 
@@ -218,6 +239,45 @@ public class SimulationPresenter implements MapChangeListener {
         simulationGrid.getRowConstraints().clear();
     }
 
+    private void handleCellClick(int x, int y) {
+        System.out.println("Clicked on cell: " + x + ", " + y);
+        VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
+        vboxRight.getChildren().clear();
+
+        List<Animal> animals = worldMap.getAnimalsAt(new Vector2d(x, y));
+        if (animals.isEmpty()) {
+            return;
+        }
+
+        VBox imagesVBox = new VBox();
+        VBox statisticsVBox = new VBox();
+        statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        for (Animal animal : animals) {
+            ImageView imageView = new ImageView(images.get("animal"));
+            imageView.setFitWidth(50);
+            imageView.setFitHeight(50);
+            imageView.setOnMouseClicked(event -> {
+                lastSelectedAnimal = animal;
+                displayAnimalStatistics(animal, statisticsVBox);
+            });
+            imagesVBox.getChildren().add(imageView);
+        }
+
+        vboxRight.getChildren().addAll(imagesVBox, statisticsVBox);
+    }
+
+    private void displayAnimalStatistics(Animal animal, VBox statisticsVBox) {
+        statisticsVBox.getChildren().clear();
+        if (animal.isAlive()) {
+            Label energyLabel = new Label("Energy: " + animal.getEnergyLevel());
+            Label ageLabel = new Label("Age: " + (simulation.getDate() - animal.getDateOfBirth()));
+            statisticsVBox.getChildren().addAll(energyLabel, ageLabel);
+        } else {
+            Label deadLabel = new Label("The tracked animal has died.");
+            statisticsVBox.getChildren().add(deadLabel);
+        }
+    }
 
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
@@ -225,11 +285,28 @@ public class SimulationPresenter implements MapChangeListener {
             drawMap();
             dayLabel.setText(message);
             currentAnimals.setText("Current animals: " + worldMap.getNumberOfAnimals());
-            averageAnimals.setText("Average animals per day: " + 0);
             currentPlants.setText("Current plants: " + worldMap.getNumberOfPlants());
+
+            if (lastSelectedAnimal != null) {
+                VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
+                vboxRight.getChildren().clear();
+
+                ImageView imageView = new ImageView(images.get("animal"));
+                imageView.setFitWidth(100); // Larger image
+                imageView.setFitHeight(100); // Larger image
+
+                VBox statisticsVBox = new VBox();
+                statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
+                displayAnimalStatistics(lastSelectedAnimal, statisticsVBox);
+
+                vboxRight.getChildren().addAll(imageView, statisticsVBox);
+            }
         });
     }
 
+    public Simulation getSimulation(){
+        return simulation;
+    }
 
     @FXML
     public void onSimulationStartClicked(){
@@ -243,8 +320,8 @@ public class SimulationPresenter implements MapChangeListener {
 
             mapHeight = Integer.parseInt(mapHeightField.getText());
             mapWidth = Integer.parseInt(mapWidthField.getText());
-            cellHeight = Math.min(600 / mapHeight, 600 / mapWidth);
-            cellWidth = Math.min(600 / mapHeight, 600 / mapWidth);
+            cellHeight = Math.min(800 / mapHeight, 800 / mapWidth);
+            cellWidth = Math.min(800 / mapHeight, 800 / mapWidth);
             String mapVariant = mapVariantField.getValue();
             int initialPlants = Integer.parseInt(initialPlantsField.getText());
             int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -275,27 +352,12 @@ public class SimulationPresenter implements MapChangeListener {
 
             initializeImages();
 
-            BorderPane root = simulationApp.openSimulationWindow(this);
+            simulationApp.openSimulationWindow(this);
 
             simulation = new Simulation(map, simulationParameters);
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
 
-            initializeWindowElements(root, simulation);
-
             engine.runAsyncInThreadPool();
-
-            //            String moveInput = moveListField.getText();
-//            List<MoveDirection> directions = parseOptions(moveInput.split(" "));
-//            List<Vector2d> positions = List.of(new Vector2d(2, 2), new Vector2d(3, 4));
-//            AbstractWorldMap earthMap = new Earth(10, 10);
-//            earthMap.addObserver(this);
-//            this.setWorldMap(earthMap);
-//            this.setMapDimensions(earthMap.getCurrentBounds());
-//
-//            Simulation simulation = new Simulation(positions, earthMap, 1, 2, 8, 10, 10, 7, 4, 6);
-//            // simulation parameters are hard-coded for now
-//            SimulationEngine engine = new SimulationEngine(List.of(simulation));
-//            engine.runAsync();
         }
         catch (Exception e){
             System.out.println("Error: " + e.getMessage());
