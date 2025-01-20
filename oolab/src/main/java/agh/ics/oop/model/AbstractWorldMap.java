@@ -169,11 +169,10 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public Collection<WorldElement> getElements() {
-        Collection<WorldElement> elements = new ArrayList<>();
+        Collection<WorldElement> elements = new ArrayList<>(plants.values());
         for (ArrayList<Animal> animalsOnSquare : animals.values()) {
             elements.addAll(animalsOnSquare);
         }
-        elements.addAll(plants.values());
         return elements;
     }
 
@@ -237,6 +236,14 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public Boundary getCurrentBounds() {
         return bounds;
+    }
+
+    @Override
+    public int[] getPreferredStrip(){
+        int[] copy = new int[2];
+        copy[0] = preferredStrip[0];
+        copy[1] = preferredStrip[1];
+        return copy;
     }
 
     @Override

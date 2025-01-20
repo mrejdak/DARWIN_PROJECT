@@ -14,7 +14,7 @@ public class Genes {
     }
 
     //Constructor for children
-    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, int simulationVariant){
+    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, String simulationVariant){
         genes = new int[numberOfGenes];
         calculateGenes(strongerParent, weakerParent, numberOfGenes);
         mutation(simulationVariant, 2); //amount of mutations is hardcoded for now TODO: add variable to constructor
@@ -70,9 +70,9 @@ public class Genes {
                 (int) Math.floor((numerator/denominator) * numberOfGenes);
     }
 
-    private void mutation(int simulationVariant, int amountOfMutations){
+    private void mutation(String simulationVariant, int amountOfMutations){
         for(int i = 0; i < amountOfMutations; i++){
-            if(simulationVariant == 0){ //Basic variant
+            if(simulationVariant.equals("Standard")){ //Basic variant
                 oneGeneMutation();
             }else{                      //Additional variant "[2] podmianka"
                 double mutationChoice = random.nextDouble();

@@ -16,14 +16,16 @@
             minHeight="750.0" minWidth="850.0"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter">
     <top>
-        <Label fx:id="moveDescription" text="Movement description will be displayed here" textAlignment="CENTER"/>
+        <VBox minHeight="100" alignment="CENTER">
+            <Label fx:id="moveDescription" text="Type in the initial values for the simulation" alignment="CENTER" textAlignment="CENTER"/>
+        </VBox>
     </top>
     <center>
         <GridPane alignment="CENTER" hgap="10" vgap="10">
             <Label text="Map Height" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <TextField fx:id="mapHeightField" maxWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <TextField fx:id="mapHeightField" maxWidth="200" GridPane.rowIndex="0" GridPane.columnIndex="1" text="10"/>
             <Label text="Map Width" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="mapWidthField" maxWidth="200" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <TextField fx:id="mapWidthField" maxWidth="200" GridPane.rowIndex="1" GridPane.columnIndex="1" text="10"/>
             <Label text="Map Variant" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <ComboBox fx:id="mapVariantField" maxWidth="200" GridPane.rowIndex="2" GridPane.columnIndex="1" value="Earth">
                 <items>
@@ -34,23 +36,23 @@
                 </items>
             </ComboBox>
             <Label text="Initial Number of Plants" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="initialPlantsField" maxWidth="200" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <TextField fx:id="initialPlantsField" maxWidth="200" GridPane.rowIndex="3" GridPane.columnIndex="1" text="4"/>
             <Label text="Energy per Plant" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <TextField fx:id="plantEnergyField" maxWidth="200" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <TextField fx:id="plantEnergyField" maxWidth="200" GridPane.rowIndex="4" GridPane.columnIndex="1" text="2"/>
             <Label text="Plants per Day" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-            <TextField fx:id="dailyPlantsField" maxWidth="200" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            <TextField fx:id="dailyPlantsField" maxWidth="200" GridPane.rowIndex="5" GridPane.columnIndex="1" text="2"/>
             <Label text="Initial Number of Animals" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-            <TextField fx:id="initialAnimalsField" maxWidth="200" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+            <TextField fx:id="initialAnimalsField" maxWidth="200" GridPane.rowIndex="6" GridPane.columnIndex="1" text="3"/>
             <Label text="Initial Animal Energy" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-            <TextField fx:id="animalEnergyField" maxWidth="200" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+            <TextField fx:id="animalEnergyField" maxWidth="200" GridPane.rowIndex="7" GridPane.columnIndex="1" text="10"/>
             <Label text="Energy needed to breed" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-            <TextField fx:id="requiredEnergyField" maxWidth="200" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+            <TextField fx:id="requiredEnergyField" maxWidth="200" GridPane.rowIndex="8" GridPane.columnIndex="1" text="6"/>
             <Label text="Parent Energy for Offspring" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-            <TextField fx:id="parentEnergyField" maxWidth="200" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+            <TextField fx:id="parentEnergyField" maxWidth="200" GridPane.rowIndex="9" GridPane.columnIndex="1" text="2"/>
             <Label text="Minimum Mutations" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
-            <TextField fx:id="minMutationsField" maxWidth="200" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+            <TextField fx:id="minMutationsField" maxWidth="200" GridPane.rowIndex="10" GridPane.columnIndex="1" text="0"/>
             <Label text="Maximum Mutations" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
-            <TextField fx:id="maxMutationsField" maxWidth="200" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+            <TextField fx:id="maxMutationsField" maxWidth="200" GridPane.rowIndex="11" GridPane.columnIndex="1" text="1"/>
             <Label text="Mutation Variant" GridPane.rowIndex="12" GridPane.columnIndex="0"/>
             <ComboBox fx:id="mutationVariantField" maxWidth="200" GridPane.rowIndex="12" GridPane.columnIndex="1" value="Standard">
                 <items>
@@ -61,11 +63,11 @@
                 </items>
             </ComboBox>
             <Label text="Genome Length" GridPane.rowIndex="13" GridPane.columnIndex="0"/>
-            <TextField fx:id="genomeLengthField" maxWidth="200" GridPane.rowIndex="13" GridPane.columnIndex="1"/>
+            <TextField fx:id="genomeLengthField" maxWidth="200" GridPane.rowIndex="13" GridPane.columnIndex="1" text="7"/>
         </GridPane>
     </center>
     <bottom>
-    <VBox alignment="CENTER">
+    <VBox minHeight="100" alignment="CENTER">
         <Button text="Start Simulation!" onAction="#onSimulationStartClicked"/>
     </VBox>
     </bottom>

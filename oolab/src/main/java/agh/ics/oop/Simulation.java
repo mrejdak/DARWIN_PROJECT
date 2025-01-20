@@ -14,7 +14,7 @@ public class Simulation implements Runnable{
     private final ArrayList<Animal> animals;
     private final WorldMap map;
     private final int plantsPerDay;
-    private final int mutationVariant;
+    private final String mutationVariant;
     private final int frequencyOfTideChanges;
     private final int amountOfGenes;
     private final int initialEnergyLevel;
@@ -30,7 +30,7 @@ public class Simulation implements Runnable{
 
         this.map = map;
         int startingAnimalCount = simulationParameters.initialAnimals();
-        this.mutationVariant = simulationParameters.mutationVariant().equals("Standard") ? 0 : 1;
+        this.mutationVariant = simulationParameters.mutationVariant();
         this.frequencyOfTideChanges = 4;// TODO choose if we take it as a parameter or hardcode it
         this.amountOfGenes = simulationParameters.genomeLength();
         this.initialEnergyLevel = simulationParameters.animalEnergy();

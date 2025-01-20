@@ -31,7 +31,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int amountOfGenes, int dateOfBirth){
+    public Animal(Animal firstParent, Animal secondParent, String simulationVariants, int amountOfGenes, int dateOfBirth){
         this.amountOfGenes = amountOfGenes;
         this.geneTracker = chooseStartingGene();
         this.dateOfBirth = dateOfBirth;

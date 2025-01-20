@@ -68,6 +68,8 @@ public interface WorldMap extends MoveValidator {
 
     void removePlant(Vector2d position);
 
+    int[] getPreferredStrip();
+
     Collection<WorldElement> getElements();
 
     Boundary getCurrentBounds();

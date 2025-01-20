@@ -9,15 +9,16 @@ import agh.ics.oop.model.util.SimulationParameters;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 
-import java.util.Collection;
-import java.util.List;
+
+import java.util.*;
 
 public class SimulationPresenter implements MapChangeListener {
     @FXML
@@ -50,17 +51,18 @@ public class SimulationPresenter implements MapChangeListener {
     private TextField initialPlantsField;
 
 
-    @FXML
-    private Label infoLabel;
+    private GridPane simulationGrid;
 
-//    @FXML
-//    private TextField mapWidthField;
-//    @FXML
-//    private TextField mapHeightField;
+    // Other methods and fields
+
+    @FXML
+    public void initialize() {
+        // Initialization code if needed
+    }
+
     @FXML
     private Label moveDescription;
-    @FXML
-    private GridPane mapGrid;
+
 //
 //    private int mapWidth = Integer.parseInt(mapWidthField.getText());
 //    private int mapHeight = Integer.parseInt(mapHeightField.getText());
@@ -73,7 +75,16 @@ public class SimulationPresenter implements MapChangeListener {
     private WorldMap worldMap;
     private int cellWidth = 50;
     private int cellHeight = 50;
+    private final SimulationApp simulationApp = new SimulationApp();
+    private final Map<String, Image> images = new HashMap<>();
+    public void initializeGrid() {
+        simulationGrid = new GridPane();
+        simulationGrid.setGridLinesVisible(true);
 
+        gridColumns();
+        gridRows();
+        setCellBackgrounds();
+    }
 
     public void setWorldMap(WorldMap worldMap) {
         this.worldMap = worldMap;
@@ -87,15 +98,44 @@ public class SimulationPresenter implements MapChangeListener {
 
     }
 
+    private void setCellBackgrounds(){
+        Image steppe = images.get("steppe");
+        Image jungle = images.get("jungle");
+        int[] prefStrip = worldMap.getPreferredStrip();
 
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                ImageView imageView;
+                if(y <= prefStrip[1] && y >= prefStrip[0]){
+                    imageView = new ImageView(jungle);
+                }else{
+                    imageView = new ImageView(steppe);
+                }
+
+                imageView.setFitWidth(cellWidth);
+                imageView.setFitHeight(cellHeight);
+                simulationGrid.add(imageView, x, y);
+            }
+        }
+    }
+    private void initializeImages() {
+        images.put("animal", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/animal.png")).toExternalForm()));
+        images.put("plant", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/plant.png")).toExternalForm()));
+        images.put("jungle", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/prefered_background.png")).toExternalForm()));
+        images.put("steppe", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/regular_background.png")).toExternalForm()));
+        images.put("water", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/water.png")).toExternalForm()));
+
+    }
     private void drawMap() {
-        clearGrid();
+        if(simulationGrid != null) {
+            clearGrid();
+        }
 //        updateBoundaries();
         gridColumns();
         gridRows();
+        setCellBackgrounds();
         addElements();
 
-        infoLabel.setText(worldMap.toString());
     }
 
 
@@ -115,41 +155,55 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     private void gridColumns(){
-        mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
-        for(int i=0; i<mapWidth; i++){
+        simulationGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
+        for(int i=0; i<mapWidth-1; i++){
 //            Label label = new Label(Integer.toString(i));
 //            GridPane.setHalignment(label, HPos.CENTER);
-            mapGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
+            simulationGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
 //            mapGrid.add(label, i+1, 0);
         }
     }
 
     private void gridRows(){
-        mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
-        for(int i=0; i<mapHeight; i++){
+        simulationGrid.getRowConstraints().add(new RowConstraints(cellHeight));
+        for(int i=0; i<mapHeight-1; i++){
 //            Label label = new Label(Integer.toString(mapHeight - 1 - i));
 //            GridPane.setHalignment(label, HPos.CENTER);
-            mapGrid.getRowConstraints().add(new RowConstraints(cellHeight));
+            simulationGrid.getRowConstraints().add(new RowConstraints(cellHeight));
 //            mapGrid.add(label, 0, i+1);
         }
     }
 
-    private void addElements(){
-
+    private void addElements() {
         Collection<WorldElement> elements = worldMap.getElements();
         for (WorldElement element : elements) {
             Vector2d pos = element.getPosition();
-            Label elementLabel = new Label(worldMap.objectAt(pos).toString());
-            mapGrid.add(elementLabel, pos.getX(), pos.getY());
-            GridPane.setHalignment(elementLabel, HPos.CENTER);
+            ImageView imageView = null;
+
+            if (element.getClass() == Animal.class) {
+                imageView = new ImageView(images.get("animal"));
+            } else if (element.getClass() == Plant.class) {
+                imageView = new ImageView(images.get("plant"));
+            } else if (element.getClass() == Water.class) {
+                imageView = new ImageView(images.get("water"));
+            }
+
+            if (imageView != null) {
+                imageView.setFitWidth(cellWidth);
+                imageView.setFitHeight(cellHeight);
+                simulationGrid.add(imageView, pos.getX(), pos.getY());
+                GridPane.setHalignment(imageView, HPos.CENTER);
+            }
         }
     }
 
 
     private void clearGrid() {
-        mapGrid.getChildren().retainAll(mapGrid.getChildren().get(0)); // hack to retain visible grid lines
-        mapGrid.getColumnConstraints().clear();
-        mapGrid.getRowConstraints().clear();
+        if (!simulationGrid.getChildren().isEmpty()) {
+            simulationGrid.getChildren().retainAll(simulationGrid.getChildren().get(0)); // hack to retain visible grid lines
+        }
+        simulationGrid.getColumnConstraints().clear();
+        simulationGrid.getRowConstraints().clear();
     }
 
 
@@ -172,8 +226,8 @@ public class SimulationPresenter implements MapChangeListener {
                 throw new IllegalArgumentException("All fields must be filled out");
             }
 
-            int mapHeight = Integer.parseInt(mapHeightField.getText());
-            int mapWidth = Integer.parseInt(mapWidthField.getText());
+            mapHeight = Integer.parseInt(mapHeightField.getText());
+            mapWidth = Integer.parseInt(mapWidthField.getText());
             String mapVariant = mapVariantField.getValue();
             int initialPlants = Integer.parseInt(initialPlantsField.getText());
             int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -198,8 +252,15 @@ public class SimulationPresenter implements MapChangeListener {
                 case "Tides" -> map = new LowAndHighTides(mapWidth, mapHeight);
                 default -> throw new IllegalArgumentException("Wrong map type"); //should never throw
             }
+
             map.addObserver(this);
             this.setWorldMap(map);
+
+            initializeImages();
+
+            BorderPane root = simulationApp.openSimulationWindow(this);
+            root.setCenter(simulationGrid);
+            simulationGrid.setAlignment(Pos.CENTER);
 
             Simulation simulation = new Simulation(map, simulationParameters);
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
@@ -218,7 +279,7 @@ public class SimulationPresenter implements MapChangeListener {
 //            SimulationEngine engine = new SimulationEngine(List.of(simulation));
 //            engine.runAsync();
         }
-        catch (IllegalArgumentException e){
+        catch (Exception e){
             System.out.println("Error: " + e.getMessage());
         }
 
