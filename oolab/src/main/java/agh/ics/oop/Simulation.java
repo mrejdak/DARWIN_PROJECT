@@ -25,10 +25,11 @@ public class Simulation implements Runnable{
     private final int startingPlantsCount;
     private final int minAmountOfMutations;
     private final int maxAmountOfMutations;
+    private final int mapWidth;
+    private final int mapHeight;
     private int date = 0;
     private final Random random = new Random();
     private volatile boolean running = true;
-    private int animalCounter = 0;
 
     public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
@@ -46,13 +47,16 @@ public class Simulation implements Runnable{
         this.startingPlantsCount = simulationParameters.initialPlants();
         this.minAmountOfMutations = simulationParameters.minMutations();
         this.maxAmountOfMutations = simulationParameters.maxMutations();
+        this.mapWidth = simulationParameters.mapWidth();
+        this.mapHeight = simulationParameters.mapHeight();
 
         placeAnimals(startingAnimalCount);
-        animalCounter = animals.size();
     }
 
     @Override
     public void run(){
+        MapStatistics statistics = new MapStatistics();
+        setStatistics(statistics);
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             if(!running){
@@ -80,8 +84,39 @@ public class Simulation implements Runnable{
             breedAnimalsOnMap(movedAnimals);
             map.newDay(date);
             plantsGrowth(plantsPerDay);
-            animalCounter += animals.size();
         }
+    }
+
+    private void setStatistics(MapStatistics statistics){
+        int animalCount = 0;
+        int plantCount = 0;
+        int totalEnergy = 0;
+        int totalChildrenCount = 0;
+        int waterCount = 0;
+        double averageEnergy;
+        double averageChildrenNumber;
+        int freeTiles;
+
+        for (WorldElement element : map.getElements()){
+            if (element.getClass() == Animal.class){
+                animalCount += 1;
+                totalEnergy += ((Animal) element).getEnergyLevel();
+                totalChildrenCount += ((Animal) element).getChildrenCounter();
+            } else if (element.getClass() == Plant.class) {
+                plantCount += 1;
+            } else if (element.getClass() == Water.class) {
+                waterCount += 1;
+            }
+        }
+        averageEnergy = (double) totalEnergy / animalCount;
+        freeTiles = mapWidth*mapHeight - (animalCount + plantCount + waterCount);
+        averageChildrenNumber = (double) totalChildrenCount / animalCount;
+
+        statistics.setAnimalCount(animalCount);
+        statistics.setPlantCount(plantCount);
+        statistics.setFreeTiles(freeTiles);
+        statistics.setAverageEnergy(averageEnergy);
+        statistics.setAverageChildrenNumber(averageChildrenNumber);
     }
 
     private void removeDeadAnimals(){
@@ -199,10 +234,5 @@ public class Simulation implements Runnable{
         }
         button.setText("Pause");
         button.setOnAction(e -> pause(button));
-    }
-
-    public double getAverageAnimalPerDay(){
-        if(date == 0){ return 0;}
-        return Math.round((double) animalCounter / date * 100.0) / 100.0;
     }
 }
