@@ -22,6 +22,8 @@ public class Simulation implements Runnable{
     private final int energyRequiredForBreeding;
     private final int parentEnergyLoss;
     private final int startingPlantsCount;
+    private final int mapWidth;
+    private final int mapHeight;
     private int date = 0;
     private final Random random = new Random();
 
@@ -40,12 +42,14 @@ public class Simulation implements Runnable{
         this.animals = new ArrayList<>();
         this.plantsPerDay = simulationParameters.dailyPlants();
         this.startingPlantsCount = simulationParameters.initialPlants();
+        this.mapWidth = simulationParameters.mapWidth();
+        this.mapHeight = simulationParameters.mapHeight();
 
         placeAnimals(startingAnimalCount);
     }
 
     @Override
-    public void run(){
+    public void run(){;
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             date += 1;

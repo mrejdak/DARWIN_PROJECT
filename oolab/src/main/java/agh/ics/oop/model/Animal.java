@@ -142,6 +142,10 @@ public class Animal implements WorldElement, Comparable<Animal>{
         return geneTracker;
     }
 
+    public int getDateOfBirth() {
+        return dateOfBirth;
+    }
+
     @Override
     public int compareTo(Animal comparedTo) {
 
