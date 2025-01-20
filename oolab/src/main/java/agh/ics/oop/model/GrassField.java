@@ -4,6 +4,7 @@ import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.RandomPointsGenerator;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -34,8 +35,8 @@ public class GrassField extends AbstractWorldMap {
     }
 
     @Override
-    public Collection<WorldElement> getElements() {
-        Collection<WorldElement> elements = super.getElements();
+    public CopyOnWriteArrayList<WorldElement> getElements() {
+        CopyOnWriteArrayList<WorldElement> elements = super.getElements();
         elements.addAll(grassBlocks.values());
         return elements;
     }

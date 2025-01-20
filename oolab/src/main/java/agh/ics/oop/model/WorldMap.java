@@ -8,6 +8,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The interface responsible for interacting with the map of the world.
@@ -75,7 +76,7 @@ public interface WorldMap extends MoveValidator {
     int getNumberOfAnimals();
     int getNumberOfPlants();
 
-    Collection<WorldElement> getElements();
+    CopyOnWriteArrayList<WorldElement> getElements();
 
     Boundary getCurrentBounds();
 

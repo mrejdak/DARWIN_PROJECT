@@ -6,6 +6,7 @@ import static agh.ics.oop.model.MapDirection.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LowAndHighTides extends AbstractWorldMap{
 
@@ -69,8 +70,8 @@ public class LowAndHighTides extends AbstractWorldMap{
     }
 
     @Override
-    public Collection<WorldElement> getElements() {
-        Collection<WorldElement> elements = super.getElements();
+    public CopyOnWriteArrayList<WorldElement> getElements() {
+        CopyOnWriteArrayList<WorldElement> elements = super.getElements();
         if (isHighTide){
             elements.addAll(highTideWaterBlocks.values());
         } else {

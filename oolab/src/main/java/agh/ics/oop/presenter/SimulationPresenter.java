@@ -21,6 +21,7 @@ import javafx.scene.layout.*;
 
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SimulationPresenter implements MapChangeListener {
     @FXML
@@ -187,7 +188,7 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void addElements() {
-        Collection<WorldElement> elements = worldMap.getElements();
+        CopyOnWriteArrayList<WorldElement> elements = worldMap.getElements();
         for (WorldElement element : elements) {
             Vector2d pos = element.getPosition();
             ImageView imageView = null;
@@ -224,7 +225,7 @@ public class SimulationPresenter implements MapChangeListener {
             drawMap();
             dayLabel.setText(message);
             currentAnimals.setText("Current animals: " + worldMap.getNumberOfAnimals());
-            averageAnimals.setText("Average animals per day: " + simulation.getAverageAnimalPerDay());
+            averageAnimals.setText("Average animals per day: " + 0);
             currentPlants.setText("Current plants: " + worldMap.getNumberOfPlants());
         });
     }

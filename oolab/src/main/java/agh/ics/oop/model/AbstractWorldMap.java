@@ -6,6 +6,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractWorldMap implements WorldMap {
     private final Random random = new Random();
@@ -173,8 +174,8 @@ public abstract class AbstractWorldMap implements WorldMap {
 
 
     @Override
-    public Collection<WorldElement> getElements() {
-        Collection<WorldElement> elements = new ArrayList<>(plants.values());
+    public CopyOnWriteArrayList<WorldElement> getElements() {
+        CopyOnWriteArrayList<WorldElement> elements = new CopyOnWriteArrayList<>(plants.values());
         for (ArrayList<Animal> animalsOnSquare : animals.values()) {
             elements.addAll(animalsOnSquare);
         }
