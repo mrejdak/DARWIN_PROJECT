@@ -14,10 +14,10 @@ public class Genes {
     }
 
     //Constructor for children
-    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, String simulationVariant){
+    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, String simulationVariant, int amountOfMutations){
         genes = new int[numberOfGenes];
         calculateGenes(strongerParent, weakerParent, numberOfGenes);
-        mutation(simulationVariant, 2); //amount of mutations is hardcoded for now TODO: add variable to constructor
+        mutation(simulationVariant, amountOfMutations); //amount of mutations is hardcoded for now TODO: add variable to constructor
     }
 
     private void calculateGenes(Animal strongerParent, Animal weakerParent, int numberOfGenes){

@@ -5,6 +5,7 @@ import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.SimulationParameters;
+import javafx.scene.control.Button;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,9 +23,12 @@ public class Simulation implements Runnable{
     private final int energyRequiredForBreeding;
     private final int parentEnergyLoss;
     private final int startingPlantsCount;
+    private final int minAmountOfMutations;
+    private final int maxAmountOfMutations;
     private int date = 0;
     private final Random random = new Random();
-
+    private volatile boolean running = true;
+    private int animalCounter = 0;
 
     public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
@@ -40,14 +44,26 @@ public class Simulation implements Runnable{
         this.animals = new ArrayList<>();
         this.plantsPerDay = simulationParameters.dailyPlants();
         this.startingPlantsCount = simulationParameters.initialPlants();
+        this.minAmountOfMutations = simulationParameters.minMutations();
+        this.maxAmountOfMutations = simulationParameters.maxMutations();
 
         placeAnimals(startingAnimalCount);
+        animalCounter = animals.size();
     }
 
     @Override
     public void run(){
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
+            if(!running){
+                synchronized (this) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        System.out.println("InterruptedException: " + e.getMessage());
+                    }
+                }
+            }
             date += 1;
             if(date % frequencyOfTideChanges == 0) map.changeTide();
             removeDeadAnimals();
@@ -64,6 +80,7 @@ public class Simulation implements Runnable{
             breedAnimalsOnMap(movedAnimals);
             map.newDay(date);
             plantsGrowth(plantsPerDay);
+            animalCounter += animals.size();
         }
     }
 
@@ -138,7 +155,7 @@ public class Simulation implements Runnable{
 
     private void breedAnimals(Animal firstParent, Animal secondParent){
         try {
-            Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date);
+            Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date, random.nextInt(minAmountOfMutations, maxAmountOfMutations+1));
             map.place(child);
             animals.add(child);
             firstParent.loseEnergy(parentEnergyLoss);
@@ -167,5 +184,25 @@ public class Simulation implements Runnable{
 
     public List<Animal> getAnimals() {
         return new ArrayList<>(animals);
+    }
+
+    public void pause(Button button){
+        running = false;
+        button.setText("Resume");
+        button.setOnAction(e -> resume(button));
+    }
+
+    public void resume(Button button){
+        running = true;
+        synchronized (this) {
+            notify();
+        }
+        button.setText("Pause");
+        button.setOnAction(e -> pause(button));
+    }
+
+    public double getAverageAnimalPerDay(){
+        if(date == 0){ return 0;}
+        return Math.round((double) animalCounter / date * 100.0) / 100.0;
     }
 }

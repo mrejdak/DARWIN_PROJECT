@@ -9,7 +9,9 @@ import agh.ics.oop.model.util.SimulationParameters;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -52,27 +54,23 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     private GridPane simulationGrid;
+    private Label dayLabel;
+    private Label currentAnimals;
+    private Label averageAnimals;
+    private Label currentPlants;
+    private Button pauseButton;
 
-    // Other methods and fields
 
-    @FXML
-    public void initialize() {
-        // Initialization code if needed
-    }
 
-    @FXML
-    private Label moveDescription;
+//    @FXML
+//    public void initialize() {
+//        // Initialization code if needed
+//    }
 
-//
-//    private int mapWidth = Integer.parseInt(mapWidthField.getText());
-//    private int mapHeight = Integer.parseInt(mapHeightField.getText());
     private int mapHeight;
     private int mapWidth;
-//    private int xMin;
-//    private int yMin;
-//    private int xMax;
-//    private int yMax;
     private WorldMap worldMap;
+    private Simulation simulation;
     private int cellWidth;
     private int cellHeight;
     private final SimulationApp simulationApp = new SimulationApp();
@@ -95,6 +93,42 @@ public class SimulationPresenter implements MapChangeListener {
         mapHeight = bounds.upperRight().getY() - bounds.lowerLeft().getY();
         cellWidth = 450 / mapWidth;
         cellHeight = 450 / mapHeight;
+
+    }
+
+    private void initializeWindowElements(BorderPane root, Simulation simulation){
+        dayLabel = new Label();
+        currentAnimals = new Label();
+        averageAnimals = new Label();
+        currentPlants = new Label();
+        pauseButton = new Button("Pause");
+
+
+        VBox vboxTop = new VBox();
+        VBox vboxLeft = new VBox();
+        VBox vboxBottom = new VBox();
+
+        root.setCenter(simulationGrid);
+        simulationGrid.setAlignment(Pos.CENTER);
+
+        vboxTop.setAlignment(Pos.CENTER);
+        vboxTop.getChildren().add(dayLabel);
+        root.setTop(vboxTop);
+        dayLabel.setAlignment(Pos.CENTER);
+
+        vboxLeft.getChildren().add(pauseButton);
+        pauseButton.setOnAction(e -> {
+            simulation.pause(pauseButton);
+        });
+
+        vboxLeft.setPadding(new Insets(10));
+        root.setLeft(vboxLeft);
+
+        vboxBottom.getChildren().add(currentAnimals);
+        vboxBottom.getChildren().add(averageAnimals);
+        vboxBottom.getChildren().add(currentPlants);
+        root.setBottom(vboxBottom);
+
 
     }
 
@@ -138,39 +172,17 @@ public class SimulationPresenter implements MapChangeListener {
 
     }
 
-
-//    private void updateBoundaries(){
-//        Boundary bounds =  worldMap.getCurrentBounds();
-//        xMin = bounds.lowerLeft().getX();
-//        yMin = bounds.lowerLeft().getY();
-//        xMax = bounds.upperRight().getX();
-//        yMax = bounds.upperRight().getY();
-//        mapWidth = xMax - xMin + 1;
-//        mapHeight = yMax - yMin + 1;
-//        System.out.println(bounds.upperRight());
-//        System.out.println(bounds.lowerLeft());
-//        System.out.println(mapWidth);
-//        System.out.println(mapHeight);
-//    }
-
-
     private void gridColumns(){
         simulationGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
         for(int i=0; i<mapWidth-1; i++){
-//            Label label = new Label(Integer.toString(i));
-//            GridPane.setHalignment(label, HPos.CENTER);
             simulationGrid.getColumnConstraints().add(new ColumnConstraints(cellWidth));
-//            mapGrid.add(label, i+1, 0);
         }
     }
 
     private void gridRows(){
         simulationGrid.getRowConstraints().add(new RowConstraints(cellHeight));
         for(int i=0; i<mapHeight-1; i++){
-//            Label label = new Label(Integer.toString(mapHeight - 1 - i));
-//            GridPane.setHalignment(label, HPos.CENTER);
             simulationGrid.getRowConstraints().add(new RowConstraints(cellHeight));
-//            mapGrid.add(label, 0, i+1);
         }
     }
 
@@ -210,7 +222,10 @@ public class SimulationPresenter implements MapChangeListener {
     public void mapChanged(WorldMap worldMap, String message) {
         Platform.runLater(() -> {
             drawMap();
-            moveDescription.setText(message);
+            dayLabel.setText(message);
+            currentAnimals.setText("Current animals: " + worldMap.getNumberOfAnimals());
+            averageAnimals.setText("Average animals per day: " + simulation.getAverageAnimalPerDay());
+            currentPlants.setText("Current plants: " + worldMap.getNumberOfPlants());
         });
     }
 
@@ -260,11 +275,12 @@ public class SimulationPresenter implements MapChangeListener {
             initializeImages();
 
             BorderPane root = simulationApp.openSimulationWindow(this);
-            root.setCenter(simulationGrid);
-            simulationGrid.setAlignment(Pos.CENTER);
 
-            Simulation simulation = new Simulation(map, simulationParameters);
+            simulation = new Simulation(map, simulationParameters);
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
+
+            initializeWindowElements(root, simulation);
+
             engine.runAsyncInThreadPool();
 
             //            String moveInput = moveListField.getText();
