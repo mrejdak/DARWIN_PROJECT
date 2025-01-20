@@ -5,6 +5,7 @@ import static agh.ics.oop.model.MapDirection.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Random;
 
 public class LowAndHighTides extends AbstractWorldMap{
 
@@ -14,6 +15,7 @@ public class LowAndHighTides extends AbstractWorldMap{
 
     public LowAndHighTides(int width, int height) {
         super(width, height);
+        Random random = new Random();
         int numOfWaterSources = (width*height)/10;
         RandomPointsGenerator randomPointsGenerator = new RandomPointsGenerator(width, height);
         for (int i = 0; i < numOfWaterSources; i++) {
@@ -21,9 +23,14 @@ public class LowAndHighTides extends AbstractWorldMap{
             lowTideWaterBlocks.put(waterSourcePosition, new Water(waterSourcePosition));
             highTideWaterBlocks.computeIfAbsent(waterSourcePosition, Water::new);
             for (int j = 0; j < 4; j++){
-                Vector2d surroundingWaterPosition = waterSourcePosition
-                        .add(MapDirection.values()[(NORTH.ordinal() + 2*i)%8].toUnitVector());
-                highTideWaterBlocks.computeIfAbsent(surroundingWaterPosition, Water::new);
+                if (random.nextInt(4) != 3){
+                    Vector2d surroundingWaterPosition = waterSourcePosition
+                            .add(MapDirection.values()[(NORTH.ordinal() + 2*j)%8].toUnitVector());
+                    if (surroundingWaterPosition.precedes(getCurrentBounds().upperRight())
+                            && surroundingWaterPosition.follows(getCurrentBounds().lowerLeft())) {
+                        highTideWaterBlocks.computeIfAbsent(surroundingWaterPosition, Water::new);
+                    }
+                }
             }
         }
     }
@@ -31,6 +38,7 @@ public class LowAndHighTides extends AbstractWorldMap{
     @Override
     public void changeTide(){
         isHighTide = !isHighTide;
+        notifyAllObservers("Tide changed");
     }
 
     @Override
@@ -52,7 +60,7 @@ public class LowAndHighTides extends AbstractWorldMap{
     public WorldElement objectAt(Vector2d position) {
         if (super.objectAt(position) == null && isWaterPresent(position)){
             return highTideWaterBlocks.get(position);
-        };
+        }
         return super.objectAt(position);
     }
 
