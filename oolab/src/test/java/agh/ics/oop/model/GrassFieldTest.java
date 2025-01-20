@@ -9,13 +9,15 @@ class GrassFieldTest {
 
     @Test
     void testPlace() {
-        WorldMap grassMap = new GrassField(10);
+        WorldMap tideMap = new LowAndHighTides(10, 10);
         Animal animal1 = new Animal(new Vector2d(2, 2), 1,10);
         Animal animal2 = new Animal(new Vector2d(2, 2), 1,10);
 
-        assertDoesNotThrow(() -> grassMap.place(animal1));
+        assertDoesNotThrow(() -> tideMap.place(animal1));
 
-        assertThrows(IncorrectPositionException.class,() -> grassMap.place(animal2));
+        assertDoesNotThrow(() -> tideMap.place(animal2));
+
+        assertEquals(tideMap.getElements().size(), 12);
     }
 
     @Test
@@ -35,11 +37,11 @@ class GrassFieldTest {
             fail("Unexpected Incorrect Animal Position");
         }
 
-        grassMap.move(animal1, MoveDirection.RIGHT);
-        grassMap.move(animal2, MoveDirection.FORWARD);
-        grassMap.move(animal2, MoveDirection.LEFT);
-        grassMap.move(animal2, MoveDirection.BACKWARD);
-
+        grassMap.move(animal1);
+        grassMap.move(animal2);
+        grassMap.move(animal2);
+        grassMap.move(animal2);
+        animal1.getGenes().getGenesSequence();
 
         assertEquals(position1, animal1.getPosition());
         assertEquals(new Vector2d(1, 4), animal2.getPosition());

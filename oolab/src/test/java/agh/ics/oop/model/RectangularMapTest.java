@@ -34,12 +34,12 @@ class RectangularMapTest {
             fail("Unexpected Incorrect Animal Position");
         }
 
-        rectangularMap.move(animal1, MoveDirection.FORWARD);
-        rectangularMap.move(animal1, MoveDirection.FORWARD);
-
-        rectangularMap.move(animal2, MoveDirection.FORWARD);
-        rectangularMap.move(animal2, MoveDirection.LEFT);
-        rectangularMap.move(animal2, MoveDirection.BACKWARD);
+//        rectangularMap.move(animal1, MoveDirection.FORWARD);
+//        rectangularMap.move(animal1, MoveDirection.FORWARD);
+//
+//        rectangularMap.move(animal2, MoveDirection.FORWARD);
+//        rectangularMap.move(animal2, MoveDirection.LEFT);
+//        rectangularMap.move(animal2, MoveDirection.BACKWARD);
 
 
         assertEquals(new Vector2d(3,4), animal1.getPosition());

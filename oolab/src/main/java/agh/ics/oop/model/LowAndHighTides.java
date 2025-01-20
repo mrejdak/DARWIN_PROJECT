@@ -38,7 +38,6 @@ public class LowAndHighTides extends AbstractWorldMap{
     @Override
     public void changeTide(){
         isHighTide = !isHighTide;
-        notifyAllObservers("Tide changed");
     }
 
     @Override
@@ -66,10 +65,7 @@ public class LowAndHighTides extends AbstractWorldMap{
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        if (isHighTide){
-            return super.canMoveTo(position) && highTideWaterBlocks.get(position) == null;
-        }
-        return super.canMoveTo(position) && lowTideWaterBlocks.get(position) == null;
+        return super.canMoveTo(position) && !isWaterPresent(position);
     }
 
     @Override

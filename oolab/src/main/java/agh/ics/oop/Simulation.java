@@ -51,10 +51,18 @@ public class Simulation implements Runnable{
             date += 1;
             if(date % frequencyOfTideChanges == 0) map.changeTide();
             removeDeadAnimals();
+            map.newDay(date);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException: " + e.getMessage());
+            }
             Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
+            map.newDay(date);
             feedAnimals(movedAnimals);
+            map.newDay(date);
             breedAnimalsOnMap(movedAnimals);
-            //
+            map.newDay(date);
             plantsGrowth(plantsPerDay);
         }
     }
@@ -70,12 +78,6 @@ public class Simulation implements Runnable{
         Map<Vector2d, ArrayList<Animal>> animalsMoved = new HashMap<>();
         Vector2d oldPosition;
         for(Animal animal: animals){
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                System.out.println("InterruptedException: " + e.getMessage());
-            }
-
             oldPosition = animal.getPosition();
             map.move(animal);
             if (!oldPosition.equals(animal.getPosition())) {

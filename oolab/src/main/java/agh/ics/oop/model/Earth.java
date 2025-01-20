@@ -10,4 +10,8 @@ public class Earth extends AbstractWorldMap{
         super(width, height);
     }
 
+    @Override
+    public boolean canMoveTo(Vector2d position) {
+        return position.followsVertically(bounds.lowerLeft()) && position.precedesVertically(bounds.upperRight());
+    }
 }

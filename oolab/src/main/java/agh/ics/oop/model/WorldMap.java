@@ -33,6 +33,8 @@ public interface WorldMap extends MoveValidator {
 
     void changeTide();
 
+    void newDay(int date);
+
     boolean isWaterPresent(Vector2d position);
 
     /**

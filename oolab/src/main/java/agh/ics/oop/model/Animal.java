@@ -138,6 +138,10 @@ public class Animal implements WorldElement, Comparable<Animal>{
         return random.nextInt(0, amountOfGenes);
     }
 
+    public int getGeneTracker() {
+        return geneTracker;
+    }
+
     @Override
     public int compareTo(Animal comparedTo) {
 

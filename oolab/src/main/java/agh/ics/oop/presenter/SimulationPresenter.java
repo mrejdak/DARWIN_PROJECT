@@ -73,8 +73,8 @@ public class SimulationPresenter implements MapChangeListener {
 //    private int xMax;
 //    private int yMax;
     private WorldMap worldMap;
-    private int cellWidth = 50;
-    private int cellHeight = 50;
+    private int cellWidth;
+    private int cellHeight;
     private final SimulationApp simulationApp = new SimulationApp();
     private final Map<String, Image> images = new HashMap<>();
     public void initializeGrid() {
@@ -121,9 +121,9 @@ public class SimulationPresenter implements MapChangeListener {
     private void initializeImages() {
         images.put("animal", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/animal.png")).toExternalForm()));
         images.put("plant", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/plant.png")).toExternalForm()));
+        images.put("water", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/water.png")).toExternalForm()));
         images.put("jungle", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/prefered_background.png")).toExternalForm()));
         images.put("steppe", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/regular_background.png")).toExternalForm()));
-        images.put("water", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/water.png")).toExternalForm()));
 
     }
     private void drawMap() {
@@ -187,7 +187,6 @@ public class SimulationPresenter implements MapChangeListener {
             } else if (element.getClass() == Water.class) {
                 imageView = new ImageView(images.get("water"));
             }
-
             if (imageView != null) {
                 imageView.setFitWidth(cellWidth);
                 imageView.setFitHeight(cellHeight);
@@ -228,6 +227,8 @@ public class SimulationPresenter implements MapChangeListener {
 
             mapHeight = Integer.parseInt(mapHeightField.getText());
             mapWidth = Integer.parseInt(mapWidthField.getText());
+            cellHeight = Math.min(600 / mapHeight, 600 / mapWidth);
+            cellWidth = Math.min(600 / mapHeight, 600 / mapWidth);
             String mapVariant = mapVariantField.getValue();
             int initialPlants = Integer.parseInt(initialPlantsField.getText());
             int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -264,7 +265,7 @@ public class SimulationPresenter implements MapChangeListener {
 
             Simulation simulation = new Simulation(map, simulationParameters);
             SimulationEngine engine = new SimulationEngine(List.of(simulation));
-            engine.runAsync();
+            engine.runAsyncInThreadPool();
 
             //            String moveInput = moveListField.getText();
 //            List<MoveDirection> directions = parseOptions(moveInput.split(" "));

@@ -38,6 +38,11 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
+    @Override
+    public void newDay(int date){
+        notifyAllObservers(String.format("Day: %d", date));
+    }
+
 
     public AbstractWorldMap(int width, int height){
         bounds = new Boundary(new Vector2d(0,0), new Vector2d(width-1,height-1));
@@ -55,7 +60,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         if (canMoveTo(animal.getPosition())) {
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-            notifyAllObservers("Animal placed on map");
+//            notifyAllObservers("Animal placed on map");
             return;
         }
         throw new IncorrectPositionException(animal.getPosition());
@@ -74,10 +79,10 @@ public abstract class AbstractWorldMap implements WorldMap {
             }
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-            notifyAllObservers("Animal moved from " + oldPosition + " to " + animal.getPosition());
+//            notifyAllObservers("Animal moved from " + oldPosition + " to " + animal.getPosition());
         }
         if (!oldDirection.equals(animal.getDirection())){
-            notifyAllObservers("Animal on " + animal.getPosition() + " turned " + animal.getDirection());
+//            notifyAllObservers("Animal on " + animal.getPosition() + " turned " + animal.getDirection());
         }
     }
 
@@ -135,7 +140,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return position.followsVertically(bounds.lowerLeft()) && position.precedesVertically(bounds.upperRight());
+        return position.follows(bounds.lowerLeft()) && position.precedes(bounds.upperRight());
     }
 
     @Override
