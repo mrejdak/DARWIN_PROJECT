@@ -48,7 +48,7 @@ public class SimulationApp extends Application {
         stage.setScene(scene);
         stage.setTitle("Simulation Run");
         stage.setWidth(1400);
-        stage.setHeight(1000);
+        stage.setHeight(900);
         stage.setResizable(false);
         stage.show();
 

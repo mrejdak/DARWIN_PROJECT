@@ -20,8 +20,14 @@ public record SimulationParameters(
         if (mapWidth <= 4) {
             throw new IllegalArgumentException("Map width must be greater than 4");
         }
+        if (mapWidth > 50) {
+            throw new IllegalArgumentException("Map width must not be greater than 50");
+        }
         if (mapHeight <= 4) {
             throw new IllegalArgumentException("Map height must be greater than 4");
+        }
+        if (mapHeight > 50) {
+            throw new IllegalArgumentException("Map height must not be greater than 50");
         }
         if (initialPlants < 0) {
             throw new IllegalArgumentException("Initial plant count must be non-negative");
