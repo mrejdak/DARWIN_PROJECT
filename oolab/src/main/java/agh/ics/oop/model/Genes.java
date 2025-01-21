@@ -139,4 +139,17 @@ public class Genes {
     public int getGeneAtIndex(int index){
         return genes[index];
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Genes genes1 = (Genes) o;
+        return Arrays.equals(genes, genes1.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(genes);
+    }
 }

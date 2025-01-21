@@ -351,7 +351,7 @@ public class SimulationPresenter implements MapChangeListener {
                     new Label("Average life span: " + String.format("%.2f", statistics.getAverageLifeSpan())),
                     new Label("Average energy: " + String.format("%.2f", statistics.getAverageEnergy())),
                     new Label("Average children: " + String.format("%.2f", statistics.getAverageChildrenNumber())),
-                    new Label("Most popular genotype: " + Arrays.toString(statistics.getMostPopularGenes()))
+                    new Label("Most popular genotype: " + Arrays.toString(statistics.getMostPopularGenes().getGenesSequence()))
             };
 
             for (Label label : labels) {
@@ -401,7 +401,7 @@ public class SimulationPresenter implements MapChangeListener {
             sb.append(String.format("%.2f", statistics.getAverageLifeSpan())).append(",");
             sb.append(String.format("%.2f", statistics.getAverageEnergy())).append(",");
             sb.append(String.format("%.2f", statistics.getAverageChildrenNumber())).append(",");
-            sb.append(Arrays.toString(statistics.getMostPopularGenes())).append("\n");
+            sb.append(Arrays.toString(statistics.getMostPopularGenes().getGenesSequence())).append("\n");
 
             writer.write(sb.toString());
         } catch (FileNotFoundException e) {
