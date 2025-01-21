@@ -19,6 +19,7 @@ import javafx.scene.layout.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -413,10 +414,16 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
     private void saveStatisticsToCsv(MapStatistics statistics) {
-        String fileName = "src/main/resources/logs/simulation_statistics_" + simulation.getDate() + worldMap.getID() + ".csv";
-        try (PrintWriter writer = new PrintWriter(fileName)) {
+        String fileName = "src/main/resources/logs/simulation_statistics" + worldMap.getID() +".csv";
+        boolean fileExists = new File(fileName).exists();
+
+        try (PrintWriter writer = new PrintWriter(new FileOutputStream(fileName, true))) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Day,Current Animals,Current Plants,Free Tiles,Average Life Span,Average Energy,Average Children,Most Popular Genotype\n");
+
+            if (!fileExists) {
+                sb.append("Day,Current Animals,Current Plants,Free Tiles,Average Life Span,Average Energy,Average Children,Most Popular Genotype\n");
+            }
+
             sb.append(simulation.getDate()).append(",");
             sb.append(statistics.getAnimalCount()).append(",");
             sb.append(statistics.getPlantCount()).append(",");
