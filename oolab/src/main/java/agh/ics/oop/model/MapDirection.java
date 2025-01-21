@@ -19,13 +19,6 @@ public enum MapDirection {
         this.unitVector = unitVector;
     }
 
-    private static final Vector2d[] vectorList = {
-            new Vector2d(0, 1),
-            new Vector2d(1, 1),
-            new Vector2d(1, 0),
-            new Vector2d(0, -1),
-            new Vector2d(-1, 0)
-    };
 
     @Override
     public String toString() {
@@ -41,25 +34,6 @@ public enum MapDirection {
         };
     }
 
-    public MapDirection next() {
-        return this;
-//        return switch (this) {
-//            case NORTH -> EAST;
-//            case EAST -> SOUTH;
-//            case SOUTH -> WEST;
-//            case WEST -> NORTH;
-//        };
-    }
-
-    public MapDirection previous() {
-        return this;
-//        return switch (this) {
-//            case NORTH -> WEST;
-//            case WEST -> SOUTH;
-//            case SOUTH -> EAST;
-//            case EAST -> NORTH;
-//        };
-    }
 
     public Vector2d toUnitVector() {
         return this.unitVector;

@@ -3,7 +3,6 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.RandomPointsGenerator;
 import static agh.ics.oop.model.MapDirection.*;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;

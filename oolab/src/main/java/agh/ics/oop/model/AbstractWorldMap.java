@@ -71,7 +71,6 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public void move(Animal animal) {
         Vector2d oldPosition = animal.getPosition();
-        MapDirection oldDirection = animal.getDirection();
         animal.move(this);
         if (!oldPosition.equals(animal.getPosition())) {
             animals.get(oldPosition).remove(animal);
@@ -80,10 +79,6 @@ public abstract class AbstractWorldMap implements WorldMap {
             }
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-//            notifyAllObservers("Animal moved from " + oldPosition + " to " + animal.getPosition());
-        }
-        if (!oldDirection.equals(animal.getDirection())){
-//            notifyAllObservers("Animal on " + animal.getPosition() + " turned " + animal.getDirection());
         }
     }
 
@@ -279,5 +274,5 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public int getNumberOfPlants(){
         return plants.size();
-    };
+    }
 }

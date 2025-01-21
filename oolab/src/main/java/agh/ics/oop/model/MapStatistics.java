@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class MapStatistics {
-    int date;
     int animalCount;
     int plantCount;
     int freeTiles;
@@ -50,17 +49,11 @@ public class MapStatistics {
         this.averageEnergy = averageEnergy;
     }
 
-    public void setAverageLifeSpan(double averageLifeSpan) {
-        this.averageLifeSpan = averageLifeSpan;
-    }
 
     public void setAverageChildrenNumber(double averageChildrenNumber) {
         this.averageChildrenNumber = averageChildrenNumber;
     }
 
-    public void setDate(int date) {
-        this.date = date;
-    }
 
     public double getAverageChildrenNumber() {
         return averageChildrenNumber;
@@ -90,7 +83,4 @@ public class MapStatistics {
         return plantCount;
     }
 
-    public int getDate() {
-        return date;
-    }
 }

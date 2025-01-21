@@ -61,9 +61,6 @@ public class Animal implements WorldElement, Comparable<Animal>{
         };
     }
 
-    boolean isAt(Vector2d position) {
-        return this.position.equals(position);
-    }
 
     public void move(MoveValidator map){
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
@@ -133,7 +130,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     public HashSet<Animal> getAllDescendants(){
-        HashSet<Animal> descendants = new HashSet<Animal>();
+        HashSet<Animal> descendants = new HashSet<>();
         for (Animal child : children){
             if (!descendants.contains(child)){
                 descendants.addAll(child.getAllDescendants());
