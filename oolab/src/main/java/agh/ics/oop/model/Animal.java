@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import static agh.ics.oop.model.MapDirection.*;
@@ -16,10 +18,9 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     private int geneTracker;
     private int energyLevel;
-    private int childrenCounter = 0;
     private int plantsEatenCounter = 0;
     private final int dateOfBirth;
-
+    private final ArrayList<Animal> children = new ArrayList<>();
 
     //Constructor for initial animals
     public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
@@ -123,12 +124,27 @@ public class Animal implements WorldElement, Comparable<Animal>{
         return energyLevel;
     }
 
-    public void addChildren(){
-        this.childrenCounter += 1;
+    public void addChildren(Animal child){
+        children.add(child);
+    }
+
+    public int getDescendantsCounter(){
+        return this.getAllDescendants().size();
+    }
+
+    public HashSet<Animal> getAllDescendants(){
+        HashSet<Animal> descendants = new HashSet<Animal>();
+        for (Animal child : children){
+            if (!descendants.contains(child)){
+                descendants.addAll(child.getAllDescendants());
+            }
+        }
+        descendants.addAll(children);
+        return descendants;
     }
 
     public int getChildrenCounter(){
-        return childrenCounter;
+        return children.size();
     }
 
     public Genes getGenes(){

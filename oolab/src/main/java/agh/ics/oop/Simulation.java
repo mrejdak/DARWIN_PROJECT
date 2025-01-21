@@ -191,9 +191,9 @@ public class Simulation implements Runnable{
             map.place(child);
             animals.add(child);
             firstParent.loseEnergy(parentEnergyLoss);
-            firstParent.addChildren();
+            firstParent.addChildren(child);
             secondParent.loseEnergy(parentEnergyLoss);
-            secondParent.addChildren();
+            secondParent.addChildren(child);
             child.setEnergyLevel(parentEnergyLoss * 2);
             statistics.updateGenotypePopularity(child, true);
         }
