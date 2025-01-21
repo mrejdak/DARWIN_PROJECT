@@ -16,9 +16,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -411,6 +412,31 @@ public class SimulationPresenter implements MapChangeListener {
     public Simulation getSimulation(){
         return simulation;
     }
+
+
+    public void saveConfig(SimulationParameters parameters, String name){
+        String fileName = "src/main/resources/configs/" + name + ".json";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try{
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), parameters);
+        }
+        catch (IOException e){
+            System.out.println("Błąd podczas zapisywania konfiguracji");
+        }
+
+    }
+
+    public SimulationParameters loadConfig(String name){
+        ObjectMapper objectMapper = new ObjectMapper();
+        String fileName = "src/main/resources/configs/" + name + ".json";
+        try {
+            return objectMapper.readValue(new File(fileName), SimulationParameters.class);
+        } catch (IOException e) {
+            System.err.println("Błąd podczas odczytu konfiguracji");
+        }
+        return null;
+    }
+
 
     @FXML
     public void onSimulationStartClicked(){
