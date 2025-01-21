@@ -56,7 +56,6 @@ public class Simulation implements Runnable{
     @Override
     public void run(){
         MapStatistics statistics = new MapStatistics();
-        setStatistics(statistics);
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             if(!running){
@@ -70,7 +69,8 @@ public class Simulation implements Runnable{
             }
             date += 1;
             if(date % frequencyOfTideChanges == 0) map.changeTide();
-            removeDeadAnimals();
+            removeDeadAnimals(statistics);
+            setStatistics(statistics);
             map.newDay(date);
             try {
                 Thread.sleep(500);
@@ -78,11 +78,8 @@ public class Simulation implements Runnable{
                 System.out.println("InterruptedException: " + e.getMessage());
             }
             Map<Vector2d, ArrayList<Animal>> movedAnimals = moveAnimals();
-            map.newDay(date);
             feedAnimals(movedAnimals);
-            map.newDay(date);
-            breedAnimalsOnMap(movedAnimals);
-            map.newDay(date);
+            breedAnimalsOnMap(movedAnimals, statistics);
             plantsGrowth(plantsPerDay);
         }
     }
@@ -119,8 +116,8 @@ public class Simulation implements Runnable{
         statistics.setAverageChildrenNumber(averageChildrenNumber);
     }
 
-    private void removeDeadAnimals(){
-        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals, map);
+    private void removeDeadAnimals(MapStatistics statistics){
+        HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals, map, date, statistics);
 
         //Cleaning animals off the map
         map.cleanDeadAnimals(positions);
@@ -151,7 +148,7 @@ public class Simulation implements Runnable{
         }
     }
 
-    private void breedAnimalsOnMap(Map<Vector2d, ArrayList<Animal>> movedAnimals){
+    private void breedAnimalsOnMap(Map<Vector2d, ArrayList<Animal>> movedAnimals, MapStatistics statistics){
         for (Vector2d position : movedAnimals.keySet()) {
             ArrayList<Animal> conflictedAnimals = movedAnimals.get(position).stream()
                     .filter(animal -> animal.getEnergyLevel() >= energyRequiredForBreeding)
@@ -159,7 +156,7 @@ public class Simulation implements Runnable{
 //            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
             if (conflictedAnimals.size() > 1) {
                 resolveConflicts(conflictedAnimals);
-                breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1));
+                breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1), statistics);
             }
 
         }
@@ -188,7 +185,7 @@ public class Simulation implements Runnable{
         }
     }
 
-    private void breedAnimals(Animal firstParent, Animal secondParent){
+    private void breedAnimals(Animal firstParent, Animal secondParent, MapStatistics statistics){
         try {
             Animal child = new Animal(firstParent, secondParent, mutationVariant, amountOfGenes, date, random.nextInt(minAmountOfMutations, maxAmountOfMutations+1));
             map.place(child);
@@ -198,6 +195,7 @@ public class Simulation implements Runnable{
             secondParent.loseEnergy(parentEnergyLoss);
             secondParent.addChildren();
             child.setEnergyLevel(parentEnergyLoss * 2);
+            statistics.updateGenotypePopularity(child, true);
         }
         catch(IncorrectPositionException e){
             System.out.println("Exception: " + e.getMessage());
