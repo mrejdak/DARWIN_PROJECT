@@ -163,6 +163,7 @@ public class SimulationPresenter implements MapChangeListener {
         images.put("water", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/water.png")).toExternalForm()));
         images.put("jungle", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/prefered_background.png")).toExternalForm()));
         images.put("steppe", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/regular_background.png")).toExternalForm()));
+        images.put("animal_shiny", new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/animal_shiny.png")).toExternalForm()));
 
     }
     private void drawMap() {
@@ -198,7 +199,13 @@ public class SimulationPresenter implements MapChangeListener {
             animalVBox.setAlignment(Pos.CENTER);
 
             if (element.getClass() == Animal.class) {
-                ImageView imageView = new ImageView(images.get("animal"));
+                ImageView imageView;
+                if(((Animal) element).getGenes().equals(simulation.getStatistics().getMostPopularGenes())){
+                    imageView = new ImageView(images.get("animal_shiny"));
+                }else{
+                    imageView = new ImageView(images.get("animal"));
+
+                }
                 imageView.setFitWidth(cellWidth);
                 imageView.setFitHeight(cellHeight - 10);
 
@@ -273,7 +280,13 @@ public class SimulationPresenter implements MapChangeListener {
             VBox animalVBox = new VBox();
             animalVBox.setAlignment(Pos.CENTER);
 
-            ImageView imageView = new ImageView(images.get("animal"));
+            ImageView imageView;
+            if(animal.getGenes().equals(simulation.getStatistics().getMostPopularGenes())){
+                imageView = new ImageView(images.get("animal_shiny"));
+            }else{
+                imageView = new ImageView(images.get("animal"));
+
+            }
             imageView.setFitWidth(50);
             imageView.setFitHeight(50);
             imageView.setOnMouseClicked(event -> {
@@ -292,6 +305,16 @@ public class SimulationPresenter implements MapChangeListener {
     private void displayAnimalStatistics(Animal animal, VBox statisticsVBox) {
         statisticsVBox.getChildren().clear();
         if (animal.isAlive()) {
+            ImageView imageView;
+            if(animal.getGenes().equals(simulation.getStatistics().getMostPopularGenes())){
+                imageView = new ImageView(images.get("animal_shiny"));
+            }else{
+                imageView = new ImageView(images.get("animal"));
+
+            }
+            imageView.setFitWidth(70); 
+            imageView.setFitHeight(70);
+
             ProgressBar energyBar = new ProgressBar();
             energyBar.setPrefWidth(150);
             energyBar.setStyle("-fx-accent: darkblue;");
@@ -299,11 +322,11 @@ public class SimulationPresenter implements MapChangeListener {
 
             Label ageLabel = new Label("Age: " + (simulation.getDate() - animal.getDateOfBirth()));
             Label childrenLabel = new Label("Children: " + animal.getChildrenCounter());
-            Label descentantsLabel = new Label("Descendants: " + animal.getDescendantsCounter());
+            Label descendantsLabel = new Label("Descendants: " + animal.getDescendantsCounter());
             Label plantsEatenLabel = new Label("Plants Eaten: " + animal.getPlantsEatenCounter());
             Label genesLabel = new Label("Genes: " + Arrays.toString(animal.getGenes().getGenesSequence()));
 
-            statisticsVBox.getChildren().addAll(energyBar, ageLabel, childrenLabel,descentantsLabel ,plantsEatenLabel, genesLabel);
+            statisticsVBox.getChildren().addAll(imageView, energyBar, ageLabel, childrenLabel, descendantsLabel, plantsEatenLabel, genesLabel);
 
             if (lastSelectedAnimal != null) {
                 Button stopTrackingButton = new Button("Stop Tracking");
@@ -317,7 +340,7 @@ public class SimulationPresenter implements MapChangeListener {
                 statisticsVBox.getChildren().add(stopTrackingButton);
             }
         } else {
-            Label deadLabel = new Label("The tracked animal has died at day " +  animal.getDeathDate());
+            Label deadLabel = new Label("The tracked animal has died at day " + animal.getDeathDate());
             statisticsVBox.getChildren().add(deadLabel);
             Button stopTrackingButton = new Button("Stop Tracking");
             stopTrackingButton.setPrefWidth(200);
