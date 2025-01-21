@@ -449,6 +449,7 @@ public class SimulationPresenter implements MapChangeListener {
 
 
     public void saveConfig(){
+        initParameters();
         if(currentConfigurationName.getText().isEmpty()){
             System.out.println("Nazwa konfiguracji nie może być pusta");
             return;
@@ -509,6 +510,31 @@ public class SimulationPresenter implements MapChangeListener {
         genomeLengthField.setText(String.valueOf(parameters.genomeLength()));
     }
 
+    private void initParameters(){
+        mapHeight = Integer.parseInt(mapHeightField.getText());
+        mapWidth = Integer.parseInt(mapWidthField.getText());
+        cellHeight = Math.min(650 / mapHeight, 650 / mapWidth);
+        cellWidth = Math.min(650 / mapHeight, 650 / mapWidth);
+        String mapVariant = mapVariantField.getValue();
+        int initialPlants = Integer.parseInt(initialPlantsField.getText());
+        int plantEnergy = Integer.parseInt(plantEnergyField.getText());
+        int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
+        int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
+        int animalEnergy = Integer.parseInt(animalEnergyField.getText());
+        int requiredEnergy = Integer.parseInt(requiredEnergyField.getText());
+        int parentEnergy = Integer.parseInt(parentEnergyField.getText());
+        int minMutations = Integer.parseInt(minMutationsField.getText());
+        int maxMutations = Integer.parseInt(maxMutationsField.getText());
+        String mutationVariant = mutationVariantField.getValue();
+        int genomeLength = Integer.parseInt(genomeLengthField.getText());
+        if(simulationParameters == null){
+            simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
+                    initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
+                    minMutations, maxMutations, mutationVariant, genomeLength);
+            System.out.println(simulationParameters);
+        }
+    }
+
     @FXML
     public void onSimulationStartClicked(){
         try {
@@ -519,31 +545,10 @@ public class SimulationPresenter implements MapChangeListener {
                 throw new IllegalArgumentException("All fields must be filled out");
             }
 
-            mapHeight = Integer.parseInt(mapHeightField.getText());
-            mapWidth = Integer.parseInt(mapWidthField.getText());
-            cellHeight = Math.min(650 / mapHeight, 650 / mapWidth);
-            cellWidth = Math.min(650 / mapHeight, 650 / mapWidth);
-            String mapVariant = mapVariantField.getValue();
-            int initialPlants = Integer.parseInt(initialPlantsField.getText());
-            int plantEnergy = Integer.parseInt(plantEnergyField.getText());
-            int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
-            int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
-            int animalEnergy = Integer.parseInt(animalEnergyField.getText());
-            int requiredEnergy = Integer.parseInt(requiredEnergyField.getText());
-            int parentEnergy = Integer.parseInt(parentEnergyField.getText());
-            int minMutations = Integer.parseInt(minMutationsField.getText());
-            int maxMutations = Integer.parseInt(maxMutationsField.getText());
-            String mutationVariant = mutationVariantField.getValue();
-            int genomeLength = Integer.parseInt(genomeLengthField.getText());
-            if(simulationParameters == null){
-                simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
-                        initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
-                        minMutations, maxMutations, mutationVariant, genomeLength);
-                System.out.println(simulationParameters);
-            }
+            initParameters();
 
             AbstractWorldMap map;
-            switch (mapVariant){
+            switch (simulationParameters.mapVariant()){
                 case "Earth" -> map = new Earth(mapWidth, mapHeight);
                 case "Tides" -> map = new LowAndHighTides(mapWidth, mapHeight);
                 default -> throw new IllegalArgumentException("Wrong map type"); //should never throw
