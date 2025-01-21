@@ -56,6 +56,10 @@ public class SimulationPresenter implements MapChangeListener {
     private TextField initialPlantsField;
     @FXML
     private CheckBox exportToCsvCheckBox;
+    @FXML
+    private TextField currentConfigurationName;
+    @FXML
+    private TextField loadedConfigurationName;
 
     private GridPane simulationGrid;
     private Label dayLabel;
@@ -327,8 +331,8 @@ public class SimulationPresenter implements MapChangeListener {
             Label descendantsLabel = new Label("Descendants: " + animal.getDescendantsCounter());
             Label plantsEatenLabel = new Label("Plants Eaten: " + animal.getPlantsEatenCounter());
             Label genesLabel = new Label("Genes: " + Arrays.toString(animal.getGenes().getGenesSequence()));
-
-            statisticsVBox.getChildren().addAll(imageView, energyBar, ageLabel, childrenLabel, descendantsLabel, plantsEatenLabel, genesLabel);
+            Label activeGeneIndex = new Label("Active gene index: " + animal.getGeneTracker());
+            statisticsVBox.getChildren().addAll(imageView, energyBar, ageLabel, childrenLabel, descendantsLabel, plantsEatenLabel, genesLabel, activeGeneIndex);
 
             if (lastSelectedAnimal != null) {
                 Button stopTrackingButton = new Button("Stop Tracking");
@@ -444,11 +448,21 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
 
-    public void saveConfig(SimulationParameters parameters, String name){
-        String fileName = "src/main/resources/configs/" + name + ".json";
+    public void saveConfig(){
+        initParameters();
+        if(currentConfigurationName.getText().isEmpty()){
+            System.out.println("Nazwa konfiguracji nie może być pusta");
+            return;
+        }
+        System.out.println(currentConfigurationName.getText());
+        String fileName = "src/main/resources/configs/" + currentConfigurationName.getText() + ".json";
+        if(new File(fileName).exists()){
+            System.out.println("Konfiguracja o podanej nazwie już istnieje");
+            return;
+        }
         ObjectMapper objectMapper = new ObjectMapper();
         try{
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), parameters);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), simulationParameters);
         }
         catch (IOException e){
             System.out.println("Błąd podczas zapisywania konfiguracji");
@@ -459,6 +473,10 @@ public class SimulationPresenter implements MapChangeListener {
     public SimulationParameters loadConfig(String name){
         ObjectMapper objectMapper = new ObjectMapper();
         String fileName = "src/main/resources/configs/" + name + ".json";
+        if(!new File(fileName).exists()){
+            System.out.println("Konfiguracja o podanej nazwie nie istnieje");
+            return null;
+        }
         try {
             return objectMapper.readValue(new File(fileName), SimulationParameters.class);
         } catch (IOException e) {
@@ -467,6 +485,55 @@ public class SimulationPresenter implements MapChangeListener {
         return null;
     }
 
+    public void loadConfigOnClick(){
+        System.out.println(loadedConfigurationName.getText());
+        simulationParameters = loadConfig(loadedConfigurationName.getText());
+        if(simulationParameters != null){
+            updateFields(simulationParameters);
+        }
+    }
+
+    private void updateFields(SimulationParameters parameters) {
+        mapHeightField.setText(String.valueOf(parameters.mapHeight()));
+        mapWidthField.setText(String.valueOf(parameters.mapWidth()));
+        mapVariantField.setValue(parameters.mapVariant());
+        initialPlantsField.setText(String.valueOf(parameters.initialPlants()));
+        plantEnergyField.setText(String.valueOf(parameters.plantEnergy()));
+        dailyPlantsField.setText(String.valueOf(parameters.dailyPlants()));
+        initialAnimalsField.setText(String.valueOf(parameters.initialAnimals()));
+        animalEnergyField.setText(String.valueOf(parameters.animalEnergy()));
+        requiredEnergyField.setText(String.valueOf(parameters.requiredEnergy()));
+        parentEnergyField.setText(String.valueOf(parameters.parentEnergy()));
+        minMutationsField.setText(String.valueOf(parameters.minMutations()));
+        maxMutationsField.setText(String.valueOf(parameters.maxMutations()));
+        mutationVariantField.setValue(parameters.mutationVariant());
+        genomeLengthField.setText(String.valueOf(parameters.genomeLength()));
+    }
+
+    private void initParameters(){
+        mapHeight = Integer.parseInt(mapHeightField.getText());
+        mapWidth = Integer.parseInt(mapWidthField.getText());
+        cellHeight = Math.min(650 / mapHeight, 650 / mapWidth);
+        cellWidth = Math.min(650 / mapHeight, 650 / mapWidth);
+        String mapVariant = mapVariantField.getValue();
+        int initialPlants = Integer.parseInt(initialPlantsField.getText());
+        int plantEnergy = Integer.parseInt(plantEnergyField.getText());
+        int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
+        int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
+        int animalEnergy = Integer.parseInt(animalEnergyField.getText());
+        int requiredEnergy = Integer.parseInt(requiredEnergyField.getText());
+        int parentEnergy = Integer.parseInt(parentEnergyField.getText());
+        int minMutations = Integer.parseInt(minMutationsField.getText());
+        int maxMutations = Integer.parseInt(maxMutationsField.getText());
+        String mutationVariant = mutationVariantField.getValue();
+        int genomeLength = Integer.parseInt(genomeLengthField.getText());
+        if(simulationParameters == null){
+            simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
+                    initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
+                    minMutations, maxMutations, mutationVariant, genomeLength);
+            System.out.println(simulationParameters);
+        }
+    }
 
     @FXML
     public void onSimulationStartClicked(){
@@ -478,30 +545,10 @@ public class SimulationPresenter implements MapChangeListener {
                 throw new IllegalArgumentException("All fields must be filled out");
             }
 
-            mapHeight = Integer.parseInt(mapHeightField.getText());
-            mapWidth = Integer.parseInt(mapWidthField.getText());
-            cellHeight = Math.min(650 / mapHeight, 650 / mapWidth);
-            cellWidth = Math.min(650 / mapHeight, 650 / mapWidth);
-            String mapVariant = mapVariantField.getValue();
-            int initialPlants = Integer.parseInt(initialPlantsField.getText());
-            int plantEnergy = Integer.parseInt(plantEnergyField.getText());
-            int dailyPlants = Integer.parseInt(dailyPlantsField.getText());
-            int initialAnimals = Integer.parseInt(initialAnimalsField.getText());
-            int animalEnergy = Integer.parseInt(animalEnergyField.getText());
-            int requiredEnergy = Integer.parseInt(requiredEnergyField.getText());
-            int parentEnergy = Integer.parseInt(parentEnergyField.getText());
-            int minMutations = Integer.parseInt(minMutationsField.getText());
-            int maxMutations = Integer.parseInt(maxMutationsField.getText());
-            String mutationVariant = mutationVariantField.getValue();
-            int genomeLength = Integer.parseInt(genomeLengthField.getText());
-
-            simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
-                    initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
-                    minMutations, maxMutations, mutationVariant, genomeLength);
-            System.out.println(simulationParameters);
+            initParameters();
 
             AbstractWorldMap map;
-            switch (mapVariant){
+            switch (simulationParameters.mapVariant()){
                 case "Earth" -> map = new Earth(mapWidth, mapHeight);
                 case "Tides" -> map = new LowAndHighTides(mapWidth, mapHeight);
                 default -> throw new IllegalArgumentException("Wrong map type"); //should never throw

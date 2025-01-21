@@ -25,6 +25,12 @@
         <VBox alignment="CENTER">
             <Label text="Export to CSV" alignment="CENTER"/>
             <CheckBox fx:id="exportToCsvCheckBox" alignment="CENTER"></CheckBox>
+            <Label text="Save current configuration"/>
+            <TextField fx:id="currentConfigurationName" promptText="File name..." ></TextField>
+            <Button fx:id="saveConfigurationButton" text="Save" onAction="#saveConfig"/>
+            <Label text="Load in a configuration"/>
+            <TextField fx:id="loadedConfigurationName" promptText="File name..."></TextField>
+            <Button fx:id="loadConfigurationButton" text="Load" onAction="#loadConfigOnClick"/>
         </VBox>
     </left>
     <center>
