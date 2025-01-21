@@ -5,6 +5,7 @@ import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.SimulationParameters;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class Simulation implements Runnable{
     private int date = 0;
     private final Random random = new Random();
     private volatile boolean running = true;
-
+    private MapStatistics statistics;
     public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
         this.map = map;
@@ -55,7 +56,7 @@ public class Simulation implements Runnable{
 
     @Override
     public void run(){
-        MapStatistics statistics = new MapStatistics();
+        statistics = new MapStatistics();
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             date += 1;
@@ -82,6 +83,7 @@ public class Simulation implements Runnable{
             breedAnimalsOnMap(movedAnimals, statistics);
             plantsGrowth(plantsPerDay);
         }
+
     }
 
     private void setStatistics(MapStatistics statistics){
@@ -118,8 +120,6 @@ public class Simulation implements Runnable{
 
     private void removeDeadAnimals(MapStatistics statistics){
         HashSet<Vector2d> positions = AnimalCleaner.cleanDeadAnimalsFromSimulation(animals, map, date, statistics);
-
-        //Cleaning animals off the map
         map.cleanDeadAnimals(positions);
     }
 
@@ -238,4 +238,8 @@ public class Simulation implements Runnable{
     public int getDate() {
         return date;
     }
+    public MapStatistics getStatistics() {
+        return statistics;
+    }
+
 }

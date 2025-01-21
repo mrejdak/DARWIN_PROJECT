@@ -15,8 +15,8 @@
     -fx-background-color: gray;
     -fx-text-fill: black;
     -fx-alignment: center;
-    -fx-min-height: 250;
-    -fx-font-size: 24px;
+    -fx-min-height: 200;
+    -fx-font-size: 20px;
 }
 
 .label-day {

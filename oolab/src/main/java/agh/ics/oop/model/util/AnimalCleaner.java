@@ -42,6 +42,7 @@ public class AnimalCleaner {
         for(int i = 0; i < animals.size(); i++){
             Animal potentiallyDead = animals.get(i);
             if(potentiallyDead.getEnergyLevel() <= 0 || map.isWaterPresent(potentiallyDead.getPosition())){
+                potentiallyDead.setEnergyLevel(0);
                 indexes.add(i);
             }
         }

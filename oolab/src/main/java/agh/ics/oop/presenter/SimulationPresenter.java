@@ -11,10 +11,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -62,12 +59,6 @@ public class SimulationPresenter implements MapChangeListener {
     private Button pauseButton;
 
 
-
-//    @FXML
-//    public void initialize() {
-//        // Initialization code if needed
-//    }
-
     private int mapHeight;
     private int mapWidth;
     private WorldMap worldMap;
@@ -78,7 +69,8 @@ public class SimulationPresenter implements MapChangeListener {
     private final Map<String, Image> images = new HashMap<>();
     private boolean isPaused = false;
     private Animal lastSelectedAnimal;
-
+    private SimulationParameters simulationParameters;
+    private VBox vboxBottom;
     public void initializeGrid() {
         simulationGrid = new GridPane();
         simulationGrid.setGridLinesVisible(true);
@@ -103,8 +95,8 @@ public class SimulationPresenter implements MapChangeListener {
     public void initializeWindowElements(BorderPane root) {
         VBox vboxTop = new VBox();
         VBox vboxLeft = new VBox();
-        VBox vboxBottom = new VBox();
         VBox vboxRight = new VBox();
+        vboxBottom = new VBox();
 
         dayLabel = new Label();
         currentAnimals = new Label();
@@ -125,6 +117,9 @@ public class SimulationPresenter implements MapChangeListener {
             simulation.pause(pauseButton);
             isPaused = !isPaused;
             drawMap();
+            if (!isPaused && lastSelectedAnimal == null) {
+                vboxRight.getChildren().clear();
+            }
         });
         vboxLeft.setPadding(new Insets(10));
         vboxLeft.getStyleClass().add("vbox-left");
@@ -170,7 +165,6 @@ public class SimulationPresenter implements MapChangeListener {
         if(simulationGrid != null) {
             clearGrid();
         }
-//        updateBoundaries();
         gridColumns();
         gridRows();
         setCellBackgrounds();
@@ -196,35 +190,50 @@ public class SimulationPresenter implements MapChangeListener {
         CopyOnWriteArrayList<WorldElement> elements = worldMap.getElements();
         for (WorldElement element : elements) {
             Vector2d pos = element.getPosition();
-            ImageView imageView = null;
+            VBox animalVBox = new VBox();
+            animalVBox.setAlignment(Pos.CENTER);
 
             if (element.getClass() == Animal.class) {
-                imageView = new ImageView(images.get("animal"));
+                ImageView imageView = new ImageView(images.get("animal"));
+                imageView.setFitWidth(cellWidth);
+                imageView.setFitHeight(cellHeight - 10);
+
+                ProgressBar energyBar = new ProgressBar();
+                energyBar.setPrefWidth(cellWidth);
+                energyBar.setStyle("-fx-accent: darkblue;");
+                energyBar.setProgress((double) ((Animal) element).getEnergyLevel() / simulationParameters.requiredEnergy());
+
+                animalVBox.getChildren().addAll(imageView, energyBar);
             } else if (element.getClass() == Plant.class) {
-                imageView = new ImageView(images.get("plant"));
-            } else if (element.getClass() == Water.class) {
-                imageView = new ImageView(images.get("water"));
-            }
-            if (imageView != null) {
+                ImageView imageView = new ImageView(images.get("plant"));
                 imageView.setFitWidth(cellWidth);
                 imageView.setFitHeight(cellHeight);
-                simulationGrid.add(imageView, pos.getX(), pos.getY());
-                GridPane.setHalignment(imageView, HPos.CENTER);
+                animalVBox.getChildren().add(imageView);
+            } else if (element.getClass() == Water.class) {
+                ImageView imageView = new ImageView(images.get("water"));
+                imageView.setFitWidth(cellWidth);
+                imageView.setFitHeight(cellHeight);
+                animalVBox.getChildren().add(imageView);
             }
+
+            simulationGrid.add(animalVBox, pos.getX(), pos.getY());
+            GridPane.setHalignment(animalVBox, HPos.CENTER);
         }
 
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 Pane clickablePane = new Pane();
                 clickablePane.setPrefSize(cellWidth, cellHeight);
-                clickablePane.setStyle("-fx-background-color: transparent;");
+
+                if (lastSelectedAnimal != null && lastSelectedAnimal.isAlive() && lastSelectedAnimal.getPosition().equals(new Vector2d(x, y))) {
+                    clickablePane.setStyle("-fx-border-color: red; -fx-border-width: 4; -fx-background-color: transparent;");
+                } else {
+                    clickablePane.setStyle("-fx-background-color: transparent;");
+                }
+
                 final int finalX = x;
                 final int finalY = y;
-                if (isPaused) {
-                    clickablePane.setOnMouseClicked(event -> handleCellClick(finalX, finalY));
-                } else {
-                    clickablePane.setOnMouseClicked(null);
-                }
+                clickablePane.setOnMouseClicked(event -> handleCellClick(finalX, finalY));
                 simulationGrid.add(clickablePane, x, y);
             }
         }
@@ -233,13 +242,17 @@ public class SimulationPresenter implements MapChangeListener {
 
     private void clearGrid() {
         if (!simulationGrid.getChildren().isEmpty()) {
-            simulationGrid.getChildren().retainAll(simulationGrid.getChildren().get(0)); // hack to retain visible grid lines
+            simulationGrid.getChildren().retainAll(simulationGrid.getChildren().get(0));
         }
         simulationGrid.getColumnConstraints().clear();
         simulationGrid.getRowConstraints().clear();
     }
 
     private void handleCellClick(int x, int y) {
+        if (!isPaused) {
+            return;
+        }
+
         System.out.println("Clicked on cell: " + x + ", " + y);
         VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
         vboxRight.getChildren().clear();
@@ -249,30 +262,56 @@ public class SimulationPresenter implements MapChangeListener {
             return;
         }
 
-        VBox imagesVBox = new VBox();
         VBox statisticsVBox = new VBox();
         statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
 
         for (Animal animal : animals) {
+            VBox animalVBox = new VBox();
+            animalVBox.setAlignment(Pos.CENTER);
+
             ImageView imageView = new ImageView(images.get("animal"));
             imageView.setFitWidth(50);
             imageView.setFitHeight(50);
             imageView.setOnMouseClicked(event -> {
                 lastSelectedAnimal = animal;
+                statisticsVBox.getChildren().clear();
                 displayAnimalStatistics(animal, statisticsVBox);
             });
-            imagesVBox.getChildren().add(imageView);
+
+            animalVBox.getChildren().add(imageView);
+            vboxRight.getChildren().add(animalVBox);
         }
 
-        vboxRight.getChildren().addAll(imagesVBox, statisticsVBox);
+        vboxRight.getChildren().add(statisticsVBox);
     }
 
     private void displayAnimalStatistics(Animal animal, VBox statisticsVBox) {
         statisticsVBox.getChildren().clear();
         if (animal.isAlive()) {
-            Label energyLabel = new Label("Energy: " + animal.getEnergyLevel());
+            ProgressBar energyBar = new ProgressBar();
+            energyBar.setPrefWidth(150);
+            energyBar.setStyle("-fx-accent: darkblue;");
+            energyBar.setProgress((double) animal.getEnergyLevel() / simulationParameters.requiredEnergy());
+
             Label ageLabel = new Label("Age: " + (simulation.getDate() - animal.getDateOfBirth()));
-            statisticsVBox.getChildren().addAll(energyLabel, ageLabel);
+            Label childrenLabel = new Label("Children: " + animal.getChildrenCounter());
+            Label descentantsLabel = new Label("Descendants: " + animal.getDescendantsCounter());
+            Label plantsEatenLabel = new Label("Plants Eaten: " + animal.getPlantsEatenCounter());
+            Label genesLabel = new Label("Genes: " + Arrays.toString(animal.getGenes().getGenesSequence()));
+
+            statisticsVBox.getChildren().addAll(energyBar, ageLabel, childrenLabel,descentantsLabel ,plantsEatenLabel, genesLabel);
+
+            if (lastSelectedAnimal != null) {
+                Button stopTrackingButton = new Button("Stop Tracking");
+                stopTrackingButton.setPrefWidth(200);
+                stopTrackingButton.setOnAction(e -> {
+                    lastSelectedAnimal = null;
+                    VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
+                    vboxRight.getChildren().clear();
+                });
+                VBox.setMargin(stopTrackingButton, new Insets(10, 0, 0, 0));
+                statisticsVBox.getChildren().add(stopTrackingButton);
+            }
         } else {
             Label deadLabel = new Label("The tracked animal has died.");
             statisticsVBox.getChildren().add(deadLabel);
@@ -284,16 +323,25 @@ public class SimulationPresenter implements MapChangeListener {
         Platform.runLater(() -> {
             drawMap();
             dayLabel.setText(message);
-            currentAnimals.setText("Current animals: " + worldMap.getNumberOfAnimals());
-            currentPlants.setText("Current plants: " + worldMap.getNumberOfPlants());
+
+            MapStatistics statistics = simulation.getStatistics();
+
+            vboxBottom.getChildren().clear();
+            vboxBottom.getChildren().addAll(
+                    new Label("Current animals: " + statistics.getAnimalCount()),
+                    new Label("Current plants: " + statistics.getPlantCount()),
+                    new Label("Free tiles: " + statistics.getFreeTiles()),
+                    new Label("Average energy: " + String.format("%.2f", statistics.getAverageEnergy())),
+                    new Label("Average children: " + String.format("%.2f", statistics.getAverageChildrenNumber()))
+            );
 
             if (lastSelectedAnimal != null) {
                 VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
                 vboxRight.getChildren().clear();
 
                 ImageView imageView = new ImageView(images.get("animal"));
-                imageView.setFitWidth(100); // Larger image
-                imageView.setFitHeight(100); // Larger image
+                imageView.setFitWidth(100);
+                imageView.setFitHeight(100);
 
                 VBox statisticsVBox = new VBox();
                 statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
@@ -320,8 +368,8 @@ public class SimulationPresenter implements MapChangeListener {
 
             mapHeight = Integer.parseInt(mapHeightField.getText());
             mapWidth = Integer.parseInt(mapWidthField.getText());
-            cellHeight = Math.min(500 / mapHeight, 500 / mapWidth);
-            cellWidth = Math.min(500 / mapHeight, 500 / mapWidth);
+            cellHeight = Math.min(650 / mapHeight, 650 / mapWidth);
+            cellWidth = Math.min(650 / mapHeight, 650 / mapWidth);
             String mapVariant = mapVariantField.getValue();
             int initialPlants = Integer.parseInt(initialPlantsField.getText());
             int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -335,7 +383,7 @@ public class SimulationPresenter implements MapChangeListener {
             String mutationVariant = mutationVariantField.getValue();
             int genomeLength = Integer.parseInt(genomeLengthField.getText());
 
-            SimulationParameters simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
+            simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
                     initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
                     minMutations, maxMutations, mutationVariant, genomeLength);
             System.out.println(simulationParameters);
