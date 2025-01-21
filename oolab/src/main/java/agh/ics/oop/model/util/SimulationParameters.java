@@ -77,6 +77,9 @@ public record SimulationParameters(
         if (maxMutations > genomeLength) {
             throw new IllegalArgumentException("Max number of mutations must not be greater than length of genome");
         }
+        if(2 * initialAnimals > mapHeight*mapWidth){
+            throw new IllegalArgumentException("Initial animals count must not be greater than half of the number of tiles on map");
+        }
     }
 
     @Override
