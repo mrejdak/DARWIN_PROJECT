@@ -25,7 +25,7 @@ public class RandomPointsGenerator implements Iterable<Vector2d>{
         int[][] allPoints = new int[this.width*this.height][2];
         for (int i = 0; i < this.width*this.height; i++) {
             allPoints[i][0] = i % this.width;
-            allPoints[i][1] = i / this.height;
+            allPoints[i][1] = i / this.width;
         }
         System.out.println(Arrays.deepToString(allPoints));
         return allPoints;

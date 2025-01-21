@@ -47,8 +47,8 @@ public class SimulationApp extends Application {
         scene.getStylesheets().add(getClass().getClassLoader().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
         stage.setTitle("Simulation Run");
-        stage.setWidth(1900);
-        stage.setHeight(1200);
+        stage.setWidth(1200);
+        stage.setHeight(800);
         stage.setResizable(false);
         stage.show();
 

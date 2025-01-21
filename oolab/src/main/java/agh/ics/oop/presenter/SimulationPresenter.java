@@ -320,8 +320,8 @@ public class SimulationPresenter implements MapChangeListener {
 
             mapHeight = Integer.parseInt(mapHeightField.getText());
             mapWidth = Integer.parseInt(mapWidthField.getText());
-            cellHeight = Math.min(800 / mapHeight, 800 / mapWidth);
-            cellWidth = Math.min(800 / mapHeight, 800 / mapWidth);
+            cellHeight = Math.min(500 / mapHeight, 500 / mapWidth);
+            cellWidth = Math.min(500 / mapHeight, 500 / mapWidth);
             String mapVariant = mapVariantField.getValue();
             int initialPlants = Integer.parseInt(initialPlantsField.getText());
             int plantEnergy = Integer.parseInt(plantEnergyField.getText());

@@ -58,6 +58,11 @@ public class Simulation implements Runnable{
         MapStatistics statistics = new MapStatistics();
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
+            date += 1;
+            if(date % frequencyOfTideChanges == 0) map.changeTide();
+            removeDeadAnimals(statistics);
+            setStatistics(statistics);
+            map.newDay(date);
             if(!running){
                 synchronized (this) {
                     try {
@@ -67,11 +72,6 @@ public class Simulation implements Runnable{
                     }
                 }
             }
-            date += 1;
-            if(date % frequencyOfTideChanges == 0) map.changeTide();
-            removeDeadAnimals(statistics);
-            setStatistics(statistics);
-            map.newDay(date);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
