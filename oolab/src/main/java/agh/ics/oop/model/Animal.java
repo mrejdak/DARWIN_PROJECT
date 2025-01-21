@@ -17,6 +17,7 @@ public class Animal implements WorldElement, Comparable<Animal>{
     private int geneTracker;
     private int energyLevel;
     private int childrenCounter = 0;
+    private int plantsEatenCounter = 0;
     private final int dateOfBirth;
 
 
@@ -144,6 +145,18 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     public int getDateOfBirth() {
         return dateOfBirth;
+    }
+
+    public void addPlantEaten() {
+        plantsEatenCounter += 1;
+    }
+
+    public int getActiveGene(){
+        return genes.getGeneAtIndex(geneTracker);
+    }
+
+    public int getPlantsEatenCounter() {
+        return plantsEatenCounter;
     }
 
     @Override

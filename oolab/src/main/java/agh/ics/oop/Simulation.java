@@ -207,6 +207,7 @@ public class Simulation implements Runnable{
         Vector2d position = animal.getPosition();
         map.removePlant(position);
         animal.gainEnergy(energyGainedFromFood);
+        animal.addPlantEaten();
     }
 
     private void resolveConflicts(ArrayList<Animal> conflictedAnimals){
