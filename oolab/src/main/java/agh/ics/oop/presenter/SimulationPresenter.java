@@ -312,7 +312,7 @@ public class SimulationPresenter implements MapChangeListener {
                 imageView = new ImageView(images.get("animal"));
 
             }
-            imageView.setFitWidth(70); 
+            imageView.setFitWidth(70);
             imageView.setFitHeight(70);
 
             ProgressBar energyBar = new ProgressBar();
