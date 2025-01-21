@@ -8,7 +8,7 @@ import static agh.ics.oop.model.MapDirection.*;
 
 public class Animal implements WorldElement, Comparable<Animal>{
     private final Genes genes;
-
+    private int deathDate;
     private MapDirection direction;
     private Vector2d position;
 
@@ -193,5 +193,13 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     public boolean isAlive(){
         return energyLevel > 0;
+    }
+
+    public void setDeathDate(int deathDate){
+        this.deathDate = deathDate;
+    }
+
+    public int getDeathDate(){
+        return deathDate;
     }
 }

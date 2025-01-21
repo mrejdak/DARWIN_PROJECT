@@ -27,6 +27,7 @@ public class AnimalCleaner {
         for (int i : indexes) {
             totalLifeSpan += date - animals.get(i).getDateOfBirth();
             statistics.updateGenotypePopularity(animals.get(i), false);
+            animals.get(i).setDeathDate(date);
         }
         statistics.updateAverageLifeSpan(totalLifeSpan, totalAnimalsDead);
 

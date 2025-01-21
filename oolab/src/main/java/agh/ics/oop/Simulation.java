@@ -31,7 +31,7 @@ public class Simulation implements Runnable{
     private int date = 0;
     private final Random random = new Random();
     private volatile boolean running = true;
-    private MapStatistics statistics;
+    private final MapStatistics statistics = new MapStatistics();;
     public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
         this.map = map;
@@ -56,7 +56,6 @@ public class Simulation implements Runnable{
 
     @Override
     public void run(){
-        statistics = new MapStatistics();
         plantsGrowth(startingPlantsCount);
         while(!animals.isEmpty()){
             date += 1;
@@ -178,6 +177,7 @@ public class Simulation implements Runnable{
             try {
                 map.place(animal);
                 animals.add(animal);
+                statistics.updateGenotypePopularity(animal, true);
             }
             catch(IncorrectPositionException e){
                 // nothing, because the program will continue without adding the animal

@@ -8,7 +8,7 @@ public class MapStatistics {
     int animalCount;
     int plantCount;
     int freeTiles;
-    HashMap<Genes, Integer> genotypePopularity = new HashMap<>();
+    HashMap<int[], Integer> genotypePopularity = new HashMap<>();
     double averageEnergy;
     double averageLifeSpan;
     double averageChildrenNumber;
@@ -31,7 +31,7 @@ public class MapStatistics {
         } else {
             change = -1;
         }
-        genotypePopularity.put(animal.getGenes(), genotypePopularity.getOrDefault(animal.getGenes(), 0) + change);
+        genotypePopularity.put(animal.getGenes().getGenesSequence(), genotypePopularity.getOrDefault(animal.getGenes().getGenesSequence(), 0) + change);
     }
 
     public void setAnimalCount(int animalCount) {
@@ -74,7 +74,7 @@ public class MapStatistics {
         return averageLifeSpan;
     }
 
-    public Genes getMostPopularGenes() {
+    public int[] getMostPopularGenes() {
         return Collections.max(genotypePopularity.entrySet(), HashMap.Entry.comparingByValue()).getKey();
     }
 

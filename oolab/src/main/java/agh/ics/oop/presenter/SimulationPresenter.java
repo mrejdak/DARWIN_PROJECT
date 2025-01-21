@@ -313,8 +313,17 @@ public class SimulationPresenter implements MapChangeListener {
                 statisticsVBox.getChildren().add(stopTrackingButton);
             }
         } else {
-            Label deadLabel = new Label("The tracked animal has died.");
+            Label deadLabel = new Label("The tracked animal has died at day " +  animal.getDeathDate());
             statisticsVBox.getChildren().add(deadLabel);
+            Button stopTrackingButton = new Button("Stop Tracking");
+            stopTrackingButton.setPrefWidth(200);
+            stopTrackingButton.setOnAction(e -> {
+                lastSelectedAnimal = null;
+                VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
+                vboxRight.getChildren().clear();
+            });
+            VBox.setMargin(stopTrackingButton, new Insets(10, 0, 0, 0));
+            statisticsVBox.getChildren().add(stopTrackingButton);
         }
     }
 
@@ -326,32 +335,36 @@ public class SimulationPresenter implements MapChangeListener {
 
             MapStatistics statistics = simulation.getStatistics();
 
-            vboxBottom.getChildren().clear();
-            vboxBottom.getChildren().addAll(
+            GridPane gridPane = new GridPane();
+            gridPane.setHgap(5);
+            gridPane.setVgap(5);
+            gridPane.setAlignment(Pos.CENTER);
+
+            Label[] labels = {
                     new Label("Current animals: " + statistics.getAnimalCount()),
                     new Label("Current plants: " + statistics.getPlantCount()),
                     new Label("Free tiles: " + statistics.getFreeTiles()),
+                    new Label("Average life span: " + String.format("%.2f", statistics.getAverageLifeSpan())),
                     new Label("Average energy: " + String.format("%.2f", statistics.getAverageEnergy())),
-                    new Label("Average children: " + String.format("%.2f", statistics.getAverageChildrenNumber()))
-            );
+                    new Label("Average children: " + String.format("%.2f", statistics.getAverageChildrenNumber())),
+                    new Label("Most popular genotype: " + Arrays.toString(statistics.getMostPopularGenes()))
+            };
 
-            if (lastSelectedAnimal != null) {
-                VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
-                vboxRight.getChildren().clear();
-
-                ImageView imageView = new ImageView(images.get("animal"));
-                imageView.setFitWidth(100);
-                imageView.setFitHeight(100);
-
-                VBox statisticsVBox = new VBox();
-                statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
-                displayAnimalStatistics(lastSelectedAnimal, statisticsVBox);
-
-                vboxRight.getChildren().addAll(imageView, statisticsVBox);
+            for (Label label : labels) {
+                label.setStyle("-fx-font-size: 10px;");
             }
+
+            int rows = 2;
+            int columns = (int) Math.ceil((double) labels.length / rows);
+
+            for (int i = 0; i < labels.length; i++) {
+                gridPane.add(labels[i], i / rows, i % rows);
+            }
+
+            vboxBottom.getChildren().clear();
+            vboxBottom.getChildren().add(gridPane);
         });
     }
-
     public Simulation getSimulation(){
         return simulation;
     }
