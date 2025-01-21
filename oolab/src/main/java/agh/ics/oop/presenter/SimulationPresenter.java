@@ -56,6 +56,10 @@ public class SimulationPresenter implements MapChangeListener {
     private TextField initialPlantsField;
     @FXML
     private CheckBox exportToCsvCheckBox;
+    @FXML
+    private TextField currentConfigurationName;
+    @FXML
+    private TextField loadedConfigurationName;
 
     private GridPane simulationGrid;
     private Label dayLabel;
@@ -327,8 +331,8 @@ public class SimulationPresenter implements MapChangeListener {
             Label descendantsLabel = new Label("Descendants: " + animal.getDescendantsCounter());
             Label plantsEatenLabel = new Label("Plants Eaten: " + animal.getPlantsEatenCounter());
             Label genesLabel = new Label("Genes: " + Arrays.toString(animal.getGenes().getGenesSequence()));
-
-            statisticsVBox.getChildren().addAll(imageView, energyBar, ageLabel, childrenLabel, descendantsLabel, plantsEatenLabel, genesLabel);
+            Label activeGeneIndex = new Label("Active gene index: " + animal.getGeneTracker());
+            statisticsVBox.getChildren().addAll(imageView, energyBar, ageLabel, childrenLabel, descendantsLabel, plantsEatenLabel, genesLabel, activeGeneIndex);
 
             if (lastSelectedAnimal != null) {
                 Button stopTrackingButton = new Button("Stop Tracking");
@@ -444,11 +448,20 @@ public class SimulationPresenter implements MapChangeListener {
     }
 
 
-    public void saveConfig(SimulationParameters parameters, String name){
-        String fileName = "src/main/resources/configs/" + name + ".json";
+    public void saveConfig(){
+        if(currentConfigurationName.getText().isEmpty()){
+            System.out.println("Nazwa konfiguracji nie może być pusta");
+            return;
+        }
+        System.out.println(currentConfigurationName.getText());
+        String fileName = "src/main/resources/configs/" + currentConfigurationName.getText() + ".json";
+        if(new File(fileName).exists()){
+            System.out.println("Konfiguracja o podanej nazwie już istnieje");
+            return;
+        }
         ObjectMapper objectMapper = new ObjectMapper();
         try{
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), parameters);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), simulationParameters);
         }
         catch (IOException e){
             System.out.println("Błąd podczas zapisywania konfiguracji");
@@ -459,6 +472,10 @@ public class SimulationPresenter implements MapChangeListener {
     public SimulationParameters loadConfig(String name){
         ObjectMapper objectMapper = new ObjectMapper();
         String fileName = "src/main/resources/configs/" + name + ".json";
+        if(!new File(fileName).exists()){
+            System.out.println("Konfiguracja o podanej nazwie nie istnieje");
+            return null;
+        }
         try {
             return objectMapper.readValue(new File(fileName), SimulationParameters.class);
         } catch (IOException e) {
@@ -467,6 +484,30 @@ public class SimulationPresenter implements MapChangeListener {
         return null;
     }
 
+    public void loadConfigOnClick(){
+        System.out.println(loadedConfigurationName.getText());
+        simulationParameters = loadConfig(loadedConfigurationName.getText());
+        if(simulationParameters != null){
+            updateFields(simulationParameters);
+        }
+    }
+
+    private void updateFields(SimulationParameters parameters) {
+        mapHeightField.setText(String.valueOf(parameters.mapHeight()));
+        mapWidthField.setText(String.valueOf(parameters.mapWidth()));
+        mapVariantField.setValue(parameters.mapVariant());
+        initialPlantsField.setText(String.valueOf(parameters.initialPlants()));
+        plantEnergyField.setText(String.valueOf(parameters.plantEnergy()));
+        dailyPlantsField.setText(String.valueOf(parameters.dailyPlants()));
+        initialAnimalsField.setText(String.valueOf(parameters.initialAnimals()));
+        animalEnergyField.setText(String.valueOf(parameters.animalEnergy()));
+        requiredEnergyField.setText(String.valueOf(parameters.requiredEnergy()));
+        parentEnergyField.setText(String.valueOf(parameters.parentEnergy()));
+        minMutationsField.setText(String.valueOf(parameters.minMutations()));
+        maxMutationsField.setText(String.valueOf(parameters.maxMutations()));
+        mutationVariantField.setValue(parameters.mutationVariant());
+        genomeLengthField.setText(String.valueOf(parameters.genomeLength()));
+    }
 
     @FXML
     public void onSimulationStartClicked(){
@@ -494,11 +535,12 @@ public class SimulationPresenter implements MapChangeListener {
             int maxMutations = Integer.parseInt(maxMutationsField.getText());
             String mutationVariant = mutationVariantField.getValue();
             int genomeLength = Integer.parseInt(genomeLengthField.getText());
-
-            simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
-                    initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
-                    minMutations, maxMutations, mutationVariant, genomeLength);
-            System.out.println(simulationParameters);
+            if(simulationParameters == null){
+                simulationParameters = new SimulationParameters(mapWidth, mapHeight, mapVariant,
+                        initialPlants, plantEnergy, dailyPlants, initialAnimals, animalEnergy, requiredEnergy, parentEnergy,
+                        minMutations, maxMutations, mutationVariant, genomeLength);
+                System.out.println(simulationParameters);
+            }
 
             AbstractWorldMap map;
             switch (mapVariant){
