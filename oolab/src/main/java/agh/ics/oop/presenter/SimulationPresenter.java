@@ -361,6 +361,21 @@ public class SimulationPresenter implements MapChangeListener {
                 gridPane.add(labels[i], i / rows, i % rows);
             }
 
+            if (lastSelectedAnimal != null) {
+                VBox vboxRight = (VBox) simulationGrid.getScene().lookup(".vbox-right");
+                vboxRight.getChildren().clear();
+
+                ImageView imageView = new ImageView(images.get("animal"));
+                imageView.setFitWidth(100);
+                imageView.setFitHeight(100);
+
+                VBox statisticsVBox = new VBox();
+                statisticsVBox.setAlignment(Pos.BOTTOM_CENTER);
+                displayAnimalStatistics(lastSelectedAnimal, statisticsVBox);
+
+                vboxRight.getChildren().addAll(imageView, statisticsVBox);
+            }
+
             vboxBottom.getChildren().clear();
             vboxBottom.getChildren().add(gridPane);
         });
