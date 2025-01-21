@@ -161,4 +161,8 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
         return this.getChildrenCounter() - comparedTo.getChildrenCounter();
     }
+
+    public boolean isAlive(){
+        return energyLevel > 0;
+    }
 }

@@ -8,10 +8,16 @@ import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.presenter.SimulationPresenter;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -33,16 +39,21 @@ public class SimulationApp extends Application {
 
     }
 
-    public BorderPane openSimulationWindow(SimulationPresenter presenter) throws Exception{
+    public void openSimulationWindow(SimulationPresenter presenter) throws Exception{
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("simulationRun.fxml"));
         BorderPane root = loader.load();
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
         stage.setTitle("Simulation Run");
+        stage.setWidth(1900);
+        stage.setHeight(1200);
+        stage.setResizable(false);
         stage.show();
+
         presenter.initializeGrid();
-        return root;
+        presenter.initializeWindowElements(root);
     }
 
     private void configureStage(Stage primaryStage, BorderPane viewRoot) {

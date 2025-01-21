@@ -5,7 +5,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="agh.ics.oop.presenter.SimulationPresenter"
-            prefHeight="800.0" prefWidth="1000.0">
+            prefHeight="1200.0" prefWidth="1900.0">
     <center>
         <GridPane fx:id="mapGrid" gridLinesVisible="true">
         </GridPane>

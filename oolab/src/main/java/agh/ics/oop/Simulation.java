@@ -233,4 +233,8 @@ public class Simulation implements Runnable{
         button.setText("Pause");
         button.setOnAction(e -> pause(button));
     }
+
+    public int getDate() {
+        return date;
+    }
 }
