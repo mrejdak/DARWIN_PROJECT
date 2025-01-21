@@ -17,6 +17,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -49,7 +52,8 @@ public class SimulationPresenter implements MapChangeListener {
     private ComboBox<String> mapVariantField;
     @FXML
     private TextField initialPlantsField;
-
+    @FXML
+    private CheckBox exportToCsvCheckBox;
 
     private GridPane simulationGrid;
     private Label dayLabel;
@@ -363,7 +367,31 @@ public class SimulationPresenter implements MapChangeListener {
 
             vboxBottom.getChildren().clear();
             vboxBottom.getChildren().add(gridPane);
+
+            if (exportToCsvCheckBox.isSelected()) {
+                saveStatisticsToCsv(statistics);
+            }
         });
+    }
+
+    private void saveStatisticsToCsv(MapStatistics statistics) {
+        String fileName = "src/main/resources/logs/simulation_statistics_" + simulation.getDate() + worldMap.getID() + ".csv";
+        try (PrintWriter writer = new PrintWriter(fileName)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Day,Current Animals,Current Plants,Free Tiles,Average Life Span,Average Energy,Average Children,Most Popular Genotype\n");
+            sb.append(simulation.getDate()).append(",");
+            sb.append(statistics.getAnimalCount()).append(",");
+            sb.append(statistics.getPlantCount()).append(",");
+            sb.append(statistics.getFreeTiles()).append(",");
+            sb.append(String.format("%.2f", statistics.getAverageLifeSpan())).append(",");
+            sb.append(String.format("%.2f", statistics.getAverageEnergy())).append(",");
+            sb.append(String.format("%.2f", statistics.getAverageChildrenNumber())).append(",");
+            sb.append(Arrays.toString(statistics.getMostPopularGenes())).append("\n");
+
+            writer.write(sb.toString());
+        } catch (FileNotFoundException e) {
+            System.out.println("Error writing to CSV file: " + e.getMessage());
+        }
     }
     public Simulation getSimulation(){
         return simulation;
