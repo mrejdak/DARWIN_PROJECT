@@ -1,6 +1,7 @@
 package agh.ics.oop.model.util;
 
 import agh.ics.oop.model.Animal;
+import agh.ics.oop.model.MapStatistics;
 import agh.ics.oop.model.Vector2d;
 import agh.ics.oop.model.WorldMap;
 
@@ -16,10 +17,20 @@ public class AnimalCleaner {
         cleanAnimals(indexes, animals);
     }
 
-    public static HashSet<Vector2d> cleanDeadAnimalsFromSimulation(ArrayList<Animal> animals, WorldMap map){
+    public static HashSet<Vector2d> cleanDeadAnimalsFromSimulation(ArrayList<Animal> animals, WorldMap map, int date, MapStatistics statistics){
 
         List<Integer> indexes = findIndexes(animals, map);
         HashSet<Vector2d> positions = findPositions(indexes, animals);
+
+        int totalLifeSpan = 0;
+        int totalAnimalsDead = indexes.size();
+        for (int i : indexes) {
+            totalLifeSpan += date - animals.get(i).getDateOfBirth();
+            statistics.updateGenotypePopularity(animals.get(i), false);
+            animals.get(i).setDeathDate(date);
+        }
+        statistics.updateAverageLifeSpan(totalLifeSpan, totalAnimalsDead);
+
 
         cleanAnimals(indexes, animals);
 
@@ -32,6 +43,7 @@ public class AnimalCleaner {
         for(int i = 0; i < animals.size(); i++){
             Animal potentiallyDead = animals.get(i);
             if(potentiallyDead.getEnergyLevel() <= 0 || map.isWaterPresent(potentiallyDead.getPosition())){
+                potentiallyDead.setEnergyLevel(0);
                 indexes.add(i);
             }
         }
@@ -49,7 +61,7 @@ public class AnimalCleaner {
 
     private static void cleanAnimals(List<Integer> indexes, List<Animal> animals){
         if(!indexes.isEmpty()){
-            for(int i = animals.size()-1; i > -1; i--){
+            for(int i = indexes.size()-1; i > -1; i--){
                 animals.remove((int) indexes.get(i));
             }
         }

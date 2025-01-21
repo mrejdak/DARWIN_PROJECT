@@ -8,22 +8,24 @@ import java.util.Random;
 
 public class RandomPointsGenerator implements Iterable<Vector2d>{
 
-    private final int size;
+    private final int width;
+    private final int height;
     private final int[][] allPoints;
     private final Iterator<Vector2d> generator;
 
 
-    public RandomPointsGenerator(int size) {
-        this.size = size;
+    public RandomPointsGenerator(int width, int height) {
+        this.width = width;
+        this.height = height;
         this.allPoints = generateAllPoints();
         this.generator = iterator();
     }
 
     private int[][] generateAllPoints() {
-        int[][] allPoints = new int[this.size*this.size][2];
-        for (int i = 0; i < this.size*this.size; i++) {
-            allPoints[i][0] = i % this.size;
-            allPoints[i][1] = i / this.size;
+        int[][] allPoints = new int[this.width*this.height][2];
+        for (int i = 0; i < this.width*this.height; i++) {
+            allPoints[i][0] = i % this.width;
+            allPoints[i][1] = i / this.width;
         }
         System.out.println(Arrays.deepToString(allPoints));
         return allPoints;
@@ -35,7 +37,7 @@ public class RandomPointsGenerator implements Iterable<Vector2d>{
 
     @Override
     public Iterator<Vector2d> iterator() {
-        return new PointsIterator(allPoints, this.size*this.size-1);
+        return new PointsIterator(allPoints, this.width*this.height-1);
     }
 }
 

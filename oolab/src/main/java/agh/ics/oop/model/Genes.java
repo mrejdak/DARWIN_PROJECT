@@ -14,10 +14,10 @@ public class Genes {
     }
 
     //Constructor for children
-    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, int simulationVariant){
+    public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, String simulationVariant, int amountOfMutations){
         genes = new int[numberOfGenes];
         calculateGenes(strongerParent, weakerParent, numberOfGenes);
-        mutation(simulationVariant, 2); //amount of mutations is hardcoded for now TODO: add variable to constructor
+        mutation(simulationVariant, amountOfMutations); //amount of mutations is hardcoded for now TODO: add variable to constructor
     }
 
     private void calculateGenes(Animal strongerParent, Animal weakerParent, int numberOfGenes){
@@ -70,9 +70,9 @@ public class Genes {
                 (int) Math.floor((numerator/denominator) * numberOfGenes);
     }
 
-    private void mutation(int simulationVariant, int amountOfMutations){
+    private void mutation(String simulationVariant, int amountOfMutations){
         for(int i = 0; i < amountOfMutations; i++){
-            if(simulationVariant == 0){ //Basic variant
+            if(simulationVariant.equals("Standard")){ //Basic variant
                 oneGeneMutation();
             }else{                      //Additional variant "[2] podmianka"
                 double mutationChoice = random.nextDouble();
@@ -138,5 +138,18 @@ public class Genes {
 
     public int getGeneAtIndex(int index){
         return genes[index];
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Genes genes1 = (Genes) o;
+        return Arrays.equals(genes, genes1.genes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(genes);
     }
 }

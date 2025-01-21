@@ -1,12 +1,14 @@
 package agh.ics.oop.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import static agh.ics.oop.model.MapDirection.*;
 
 public class Animal implements WorldElement, Comparable<Animal>{
     private final Genes genes;
-
+    private int deathDate;
     private MapDirection direction;
     private Vector2d position;
 
@@ -16,9 +18,9 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     private int geneTracker;
     private int energyLevel;
-    private int childrenCounter = 0;
+    private int plantsEatenCounter = 0;
     private final int dateOfBirth;
-
+    private final ArrayList<Animal> children = new ArrayList<>();
 
     //Constructor for initial animals
     public Animal(Vector2d position, int amountOfGenes, int initialEnergyLevel) {
@@ -31,14 +33,14 @@ public class Animal implements WorldElement, Comparable<Animal>{
     }
 
     //Constructor for children
-    public Animal(Animal firstParent, Animal secondParent, int simulationVariants, int amountOfGenes, int dateOfBirth){
+    public Animal(Animal firstParent, Animal secondParent, String simulationVariants, int amountOfGenes, int dateOfBirth, int amountOfMutations){
         this.amountOfGenes = amountOfGenes;
         this.geneTracker = chooseStartingGene();
         this.dateOfBirth = dateOfBirth;
         if(firstParent.energyLevel >= secondParent.energyLevel){
-            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants);
+            genes = new Genes(amountOfGenes, firstParent, secondParent, simulationVariants, amountOfMutations);
         }else{
-            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants);
+            genes = new Genes(amountOfGenes, secondParent, firstParent, simulationVariants, amountOfMutations);
         }
         this.direction = MapDirection.values()[random.nextInt(8)];
         this.position = firstParent.getPosition();
@@ -59,9 +61,6 @@ public class Animal implements WorldElement, Comparable<Animal>{
         };
     }
 
-    boolean isAt(Vector2d position) {
-        return this.position.equals(position);
-    }
 
     public void move(MoveValidator map){
         direction = MapDirection.values()[(direction.ordinal() + genes.getGeneAtIndex(geneTracker))%8];
@@ -122,12 +121,27 @@ public class Animal implements WorldElement, Comparable<Animal>{
         return energyLevel;
     }
 
-    public void addChildren(){
-        this.childrenCounter += 1;
+    public void addChildren(Animal child){
+        children.add(child);
+    }
+
+    public int getDescendantsCounter(){
+        return this.getAllDescendants().size();
+    }
+
+    public HashSet<Animal> getAllDescendants(){
+        HashSet<Animal> descendants = new HashSet<>();
+        for (Animal child : children){
+            if (!descendants.contains(child)){
+                descendants.addAll(child.getAllDescendants());
+            }
+        }
+        descendants.addAll(children);
+        return descendants;
     }
 
     public int getChildrenCounter(){
-        return childrenCounter;
+        return children.size();
     }
 
     public Genes getGenes(){
@@ -136,6 +150,26 @@ public class Animal implements WorldElement, Comparable<Animal>{
 
     private int chooseStartingGene(){
         return random.nextInt(0, amountOfGenes);
+    }
+
+    public int getGeneTracker() {
+        return geneTracker;
+    }
+
+    public int getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void addPlantEaten() {
+        plantsEatenCounter += 1;
+    }
+
+    public int getActiveGene(){
+        return genes.getGeneAtIndex(geneTracker);
+    }
+
+    public int getPlantsEatenCounter() {
+        return plantsEatenCounter;
     }
 
     @Override
@@ -152,5 +186,17 @@ public class Animal implements WorldElement, Comparable<Animal>{
         }
 
         return this.getChildrenCounter() - comparedTo.getChildrenCounter();
+    }
+
+    public boolean isAlive(){
+        return energyLevel > 0;
+    }
+
+    public void setDeathDate(int deathDate){
+        this.deathDate = deathDate;
+    }
+
+    public int getDeathDate(){
+        return deathDate;
     }
 }

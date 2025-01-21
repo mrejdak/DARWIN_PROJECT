@@ -6,6 +6,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.MapVisualizer;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractWorldMap implements WorldMap {
     private final Random random = new Random();
@@ -38,6 +39,11 @@ public abstract class AbstractWorldMap implements WorldMap {
         }
     }
 
+    @Override
+    public void newDay(int date){
+        notifyAllObservers(String.format("Day: %d", date));
+    }
+
 
     public AbstractWorldMap(int width, int height){
         bounds = new Boundary(new Vector2d(0,0), new Vector2d(width-1,height-1));
@@ -55,7 +61,7 @@ public abstract class AbstractWorldMap implements WorldMap {
         if (canMoveTo(animal.getPosition())) {
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-            notifyAllObservers("Animal placed on map");
+//            notifyAllObservers("Animal placed on map");
             return;
         }
         throw new IncorrectPositionException(animal.getPosition());
@@ -65,7 +71,6 @@ public abstract class AbstractWorldMap implements WorldMap {
     @Override
     public void move(Animal animal) {
         Vector2d oldPosition = animal.getPosition();
-        MapDirection oldDirection = animal.getDirection();
         animal.move(this);
         if (!oldPosition.equals(animal.getPosition())) {
             animals.get(oldPosition).remove(animal);
@@ -74,10 +79,6 @@ public abstract class AbstractWorldMap implements WorldMap {
             }
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-            notifyAllObservers("Animal moved from " + oldPosition + " to " + animal.getPosition());
-        }
-        if (!oldDirection.equals(animal.getDirection())){
-            notifyAllObservers("Animal on " + animal.getPosition() + " turned " + animal.getDirection());
         }
     }
 
@@ -96,6 +97,9 @@ public abstract class AbstractWorldMap implements WorldMap {
         for(Vector2d position: positions){
             ArrayList<Animal> animalsAtPosition = animals.get(position);
             AnimalCleaner.cleanDeadAnimals(animalsAtPosition, this);
+            if(animals.get(position).isEmpty()){
+                animals.remove(position);
+            }
         }
     }
 
@@ -132,7 +136,7 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public boolean canMoveTo(Vector2d position) {
-        return position.followsVertically(bounds.lowerLeft()) && position.precedesVertically(bounds.upperRight());
+        return position.follows(bounds.lowerLeft()) && position.precedes(bounds.upperRight());
     }
 
     @Override
@@ -165,12 +169,11 @@ public abstract class AbstractWorldMap implements WorldMap {
 
 
     @Override
-    public Collection<WorldElement> getElements() {
-        Collection<WorldElement> elements = new ArrayList<>();
+    public CopyOnWriteArrayList<WorldElement> getElements() {
+        CopyOnWriteArrayList<WorldElement> elements = new CopyOnWriteArrayList<>(plants.values());
         for (ArrayList<Animal> animalsOnSquare : animals.values()) {
             elements.addAll(animalsOnSquare);
         }
-        elements.addAll(plants.values());
         return elements;
     }
 
@@ -237,6 +240,14 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
+    public int[] getPreferredStrip(){
+        int[] copy = new int[2];
+        copy[0] = preferredStrip[0];
+        copy[1] = preferredStrip[1];
+        return copy;
+    }
+
+    @Override
     public UUID getID() {
         return mapId;
     }
@@ -245,5 +256,23 @@ public abstract class AbstractWorldMap implements WorldMap {
     public String toString() {
         Boundary bounds = getCurrentBounds();
         return vis.draw(bounds.lowerLeft(), bounds.upperRight());
+    }
+
+    @Override
+    public int getNumberOfAnimals(){
+        int counter = 0;
+        for(ArrayList<Animal> animalsOnSquare: animals.values()){
+            counter += animalsOnSquare.size();
+        }
+        return counter;
+    }
+
+    @Override
+    public CopyOnWriteArrayList<Animal> getAnimalsAt(Vector2d position){
+        return animals.get(position) != null ? new CopyOnWriteArrayList<>(animals.get(position)) : new CopyOnWriteArrayList<>();
+    }
+    @Override
+    public int getNumberOfPlants(){
+        return plants.size();
     }
 }

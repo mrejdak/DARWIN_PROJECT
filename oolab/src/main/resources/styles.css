@@ -1,0 +1,48 @@
+.vbox-left, .vbox-right {
+    -fx-background-color: lightgray;
+    -fx-alignment: center;
+    -fx-padding: 10;
+    -fx-min-width: 200;
+}
+
+.vbox-top {
+    -fx-background-color: gray;
+    -fx-alignment: center;
+    -fx-min-height: 100;
+}
+
+.vbox-bottom {
+    -fx-background-color: gray;
+    -fx-text-fill: black;
+    -fx-alignment: center;
+    -fx-min-height: 100;
+    -fx-font-size: 20px;
+}
+
+.label-day {
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-text-fill: #000000;
+    -fx-font-size: 36px;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #4facfe, #00f2fe);
+    -fx-text-fill: #000000;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #00c6ff;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 5, 0, 0, 1);
+    -fx-pref-width: 100px;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #00f2fe, #4facfe);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #00c6ff, #0072ff);
+}

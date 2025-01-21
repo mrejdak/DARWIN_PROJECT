@@ -8,6 +8,7 @@ import agh.ics.oop.model.util.IncorrectPositionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The interface responsible for interacting with the map of the world.
@@ -32,6 +33,8 @@ public interface WorldMap extends MoveValidator {
     void move(Animal animal);
 
     void changeTide();
+
+    void newDay(int date);
 
     boolean isWaterPresent(Vector2d position);
 
@@ -68,7 +71,14 @@ public interface WorldMap extends MoveValidator {
 
     void removePlant(Vector2d position);
 
-    Collection<WorldElement> getElements();
+    int[] getPreferredStrip();
+
+    int getNumberOfAnimals();
+    int getNumberOfPlants();
+
+    CopyOnWriteArrayList<WorldElement> getElements();
+
+    CopyOnWriteArrayList<Animal> getAnimalsAt(Vector2d position);
 
     Boundary getCurrentBounds();
 

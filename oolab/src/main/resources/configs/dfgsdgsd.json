@@ -1,0 +1,16 @@
+{
+  "mapWidth" : 10,
+  "mapHeight" : 10,
+  "mapVariant" : "Earth",
+  "initialPlants" : 4,
+  "plantEnergy" : 2,
+  "dailyPlants" : 2,
+  "initialAnimals" : 3,
+  "animalEnergy" : 10,
+  "requiredEnergy" : 6,
+  "parentEnergy" : 2,
+  "minMutations" : 0,
+  "maxMutations" : 1,
+  "mutationVariant" : "Standard",
+  "genomeLength" : 7
+}
