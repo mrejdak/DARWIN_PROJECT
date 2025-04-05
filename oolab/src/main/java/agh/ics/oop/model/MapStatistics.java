@@ -4,15 +4,15 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class MapStatistics {
-    int animalCount;
-    int plantCount;
-    int freeTiles;
-    HashMap<Genes, Integer> genotypePopularity = new HashMap<>();
-    double averageEnergy;
-    double averageLifeSpan;
-    double averageChildrenNumber;
-    int totalLifeSpan = 0;
-    int totalAnimalsDead = 0;
+    private int animalCount;
+    private int plantCount;
+    private int freeTiles;
+    private HashMap<Genes, Integer> genotypePopularity = new HashMap<>();
+    private double averageEnergy;
+    private double averageLifeSpan;
+    private double averageChildrenNumber;
+    private int totalLifeSpan = 0;
+    private int totalAnimalsDead = 0;
 
     public MapStatistics(){
     }
