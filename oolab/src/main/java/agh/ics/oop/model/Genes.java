@@ -17,7 +17,7 @@ public class Genes {
     public Genes(int numberOfGenes, Animal strongerParent, Animal weakerParent, String simulationVariant, int amountOfMutations){
         genes = new int[numberOfGenes];
         calculateGenes(strongerParent, weakerParent, numberOfGenes);
-        mutation(simulationVariant, amountOfMutations); //amount of mutations is hardcoded for now TODO: add variable to constructor
+        mutation(simulationVariant, amountOfMutations);
     }
 
     private void calculateGenes(Animal strongerParent, Animal weakerParent, int numberOfGenes){

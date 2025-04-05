@@ -1,25 +1,17 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.MoveDirection;
-import agh.ics.oop.model.Vector2d;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * The interface responsible for interacting with the map of the world.
- * Assumes that Vector2d and MoveDirection classes are defined.
- *
- * @author apohllo, idzik
- */
+
 public interface WorldMap extends MoveValidator {
 
     /**
-     * Place a animal on the map.
+     * Place an animal on the map.
      *
      * @param animal The animal to place on the map.
      * @return True if the animal was placed. The animal cannot be placed if the move is not valid.
@@ -32,10 +24,17 @@ public interface WorldMap extends MoveValidator {
      */
     void move(Animal animal);
 
+    /**
+     * If the map variant has water, it changes the current tide
+     */
     void changeTide();
 
     void newDay(int date);
 
+    /**\
+     * @param position given position on the map
+     * @return True if there is water at given position
+     */
     boolean isWaterPresent(Vector2d position);
 
     /**

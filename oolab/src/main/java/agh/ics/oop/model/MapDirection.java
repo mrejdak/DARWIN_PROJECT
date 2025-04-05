@@ -3,8 +3,6 @@ package agh.ics.oop.model;
 
 public enum MapDirection {
 
-    //Changed the unit vector functionality a bit
-
     NORTH(new Vector2d(0, 1)),
     NORTH_EAST(new Vector2d(1, 1)),
     EAST(new Vector2d(1, 0)),

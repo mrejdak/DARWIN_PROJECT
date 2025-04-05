@@ -61,7 +61,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         if (canMoveTo(animal.getPosition())) {
             animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>());
             animals.get(animal.getPosition()).add(animal);
-//            notifyAllObservers("Animal placed on map");
             return;
         }
         throw new IncorrectPositionException(animal.getPosition());
@@ -145,7 +144,6 @@ public abstract class AbstractWorldMap implements WorldMap {
         if (objectsAt != null) {
             return this.animals.get(position).getFirst();
             // a random animal occupying that square is returned for now
-            // TODO: return list of all animals on that square (only if necessary)
         }else{
             return plants.get(position);
         }

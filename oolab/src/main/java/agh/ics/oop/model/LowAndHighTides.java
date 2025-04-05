@@ -16,16 +16,25 @@ public class LowAndHighTides extends AbstractWorldMap{
     public LowAndHighTides(int width, int height) {
         super(width, height);
         Random random = new Random();
+
+        //We set the number of water blocks during low tide to 1/14th of all blocks on the map
         int numOfWaterSources = (width*height)/14;
         RandomPointsGenerator randomPointsGenerator = new RandomPointsGenerator(width, height);
+
         for (int i = 0; i < numOfWaterSources; i++) {
             Vector2d waterSourcePosition = randomPointsGenerator.generate();
+
             lowTideWaterBlocks.put(waterSourcePosition, new Water(waterSourcePosition));
             highTideWaterBlocks.computeIfAbsent(waterSourcePosition, Water::new);
+
             for (int j = 0; j < 4; j++){
+
+                //The water expands in any direction 75% of the time
                 if (random.nextInt(4) != 3){
+
                     Vector2d surroundingWaterPosition = waterSourcePosition
                             .add(MapDirection.values()[(NORTH.ordinal() + 2*j)%8].toUnitVector());
+
                     if (surroundingWaterPosition.precedes(getCurrentBounds().upperRight())
                             && surroundingWaterPosition.follows(getCurrentBounds().lowerLeft())) {
                         highTideWaterBlocks.computeIfAbsent(surroundingWaterPosition, Water::new);
