@@ -5,7 +5,6 @@ import agh.ics.oop.model.util.AnimalCleaner;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.IncorrectPositionException;
 import agh.ics.oop.model.util.SimulationParameters;
-import javafx.application.Platform;
 import javafx.scene.control.Button;
 
 import java.util.*;
@@ -31,13 +30,13 @@ public class Simulation implements Runnable{
     private int date = 0;
     private final Random random = new Random();
     private volatile boolean running = true;
-    private final MapStatistics statistics = new MapStatistics();;
+    private final MapStatistics statistics = new MapStatistics();
     public Simulation(WorldMap map, SimulationParameters simulationParameters) {
 
         this.map = map;
         int startingAnimalCount = simulationParameters.initialAnimals();
         this.mutationVariant = simulationParameters.mutationVariant();
-        this.frequencyOfTideChanges = 4;// TODO choose if we take it as a parameter or hardcode it
+        this.frequencyOfTideChanges = 4;
         this.amountOfGenes = simulationParameters.genomeLength();
         this.initialEnergyLevel = simulationParameters.animalEnergy();
         this.energyGainedFromFood = simulationParameters.plantEnergy();
@@ -93,6 +92,7 @@ public class Simulation implements Runnable{
         int waterCount = 0;
         double averageEnergy;
         double averageChildrenNumber;
+        HashSet<Vector2d> occupiedTiles = new HashSet<>();
         int freeTiles;
 
         for (WorldElement element : map.getElements()){
@@ -105,9 +105,10 @@ public class Simulation implements Runnable{
             } else if (element.getClass() == Water.class) {
                 waterCount += 1;
             }
+            occupiedTiles.add(element.getPosition());
         }
         averageEnergy = (double) totalEnergy / animalCount;
-        freeTiles = mapWidth*mapHeight - (animalCount + plantCount + waterCount);
+        freeTiles = mapWidth*mapHeight - occupiedTiles.size();
         averageChildrenNumber = (double) totalChildrenCount / animalCount;
 
         statistics.setAnimalCount(animalCount);
@@ -152,7 +153,6 @@ public class Simulation implements Runnable{
             ArrayList<Animal> conflictedAnimals = movedAnimals.get(position).stream()
                     .filter(animal -> animal.getEnergyLevel() >= energyRequiredForBreeding)
                     .collect(Collectors.toCollection(ArrayList::new));
-//            ArrayList<Animal> conflictedAnimals = movedAnimals.get(position);
             if (conflictedAnimals.size() > 1) {
                 resolveConflicts(conflictedAnimals);
                 breedAnimals(conflictedAnimals.get(0), conflictedAnimals.get(1), statistics);
@@ -211,7 +211,6 @@ public class Simulation implements Runnable{
     }
 
     private void resolveConflicts(ArrayList<Animal> conflictedAnimals){
-        // might be unnecessary to make this into a method, but point of sorting and reversing seems clearer
         Collections.sort(conflictedAnimals);
         Collections.reverse(conflictedAnimals);
     }
