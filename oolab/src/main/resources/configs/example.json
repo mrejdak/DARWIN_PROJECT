@@ -1,0 +1,16 @@
+{
+  "mapWidth" : 15,
+  "mapHeight" : 15,
+  "mapVariant" : "Tides",
+  "initialPlants" : 20,
+  "plantEnergy" : 5,
+  "dailyPlants" : 8,
+  "initialAnimals" : 22,
+  "animalEnergy" : 12,
+  "requiredEnergy" : 10,
+  "parentEnergy" : 5,
+  "minMutations" : 0,
+  "maxMutations" : 1,
+  "mutationVariant" : "Switch-up",
+  "genomeLength" : 8
+}
