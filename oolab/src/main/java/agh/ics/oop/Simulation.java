@@ -90,8 +90,8 @@ public class Simulation implements Runnable{
         int totalEnergy = 0;
         int totalChildrenCount = 0;
         int waterCount = 0;
-        double averageEnergy;
-        double averageChildrenNumber;
+        double averageEnergy = 0.0;
+        double averageChildrenNumber = 0.0;
         HashSet<Vector2d> occupiedTiles = new HashSet<>();
         int freeTiles;
 
@@ -107,9 +107,11 @@ public class Simulation implements Runnable{
             }
             occupiedTiles.add(element.getPosition());
         }
-        averageEnergy = (double) totalEnergy / animalCount;
+        if (animalCount != 0) {
+            averageEnergy = (double) totalEnergy / animalCount;
+            averageChildrenNumber = (double) totalChildrenCount / animalCount;
+        }
         freeTiles = mapWidth*mapHeight - occupiedTiles.size();
-        averageChildrenNumber = (double) totalChildrenCount / animalCount;
 
         statistics.setAnimalCount(animalCount);
         statistics.setPlantCount(plantCount);

@@ -369,8 +369,8 @@ public class SimulationPresenter implements MapChangeListener {
             MapStatistics statistics = simulation.getStatistics();
 
             GridPane gridPane = new GridPane();
-            gridPane.setHgap(5);
-            gridPane.setVgap(5);
+            gridPane.setHgap(8);
+            gridPane.setVgap(20);
             gridPane.setAlignment(Pos.CENTER);
 
             Label[] labels = {
@@ -384,7 +384,7 @@ public class SimulationPresenter implements MapChangeListener {
             };
 
             for (Label label : labels) {
-                label.setStyle("-fx-font-size: 10px;");
+                label.setStyle("-fx-font-size: 15px;");
             }
 
             int rows = 2;

@@ -9,7 +9,7 @@ public class MapStatistics {
     private int freeTiles;
     private HashMap<Genes, Integer> genotypePopularity = new HashMap<>();
     private double averageEnergy;
-    private double averageLifeSpan;
+    private double averageLifeSpan = 0.0;
     private double averageChildrenNumber;
     private int totalLifeSpan = 0;
     private int totalAnimalsDead = 0;
@@ -20,7 +20,9 @@ public class MapStatistics {
     public void updateAverageLifeSpan(int removedAnimalsLifeSpan, int removedAnimalsCount){
         this.totalLifeSpan += removedAnimalsLifeSpan;
         this.totalAnimalsDead += removedAnimalsCount;
-        averageLifeSpan = (double) totalLifeSpan/totalAnimalsDead;
+        if (totalAnimalsDead != 0){
+            averageLifeSpan = (double) totalLifeSpan/totalAnimalsDead;
+        }
     }
 
     public void updateGenotypePopularity(Animal animal, boolean newAnimal) {
