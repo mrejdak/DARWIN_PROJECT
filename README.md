@@ -18,7 +18,7 @@ in Kraków by:
 ![image](resource/image1.png)
 
 Project guidelines (in Polish) are located
-[here](https://github.com/mrejdak/DARWIN_PROJECT/tree/main/project-guidelines).
+[here](https://github.com/mrejdak/DARWIN_PROJECT/tree/main/guidelines).
 A variant C2 is implemented.
 
 
